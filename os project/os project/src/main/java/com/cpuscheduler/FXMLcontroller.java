@@ -3,13 +3,18 @@ package com.cpuscheduler;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.text.Text;
 import javafx.util.Duration;
 
 import java.net.URL;
@@ -17,15 +22,39 @@ import java.util.ResourceBundle;
 
 public class FXMLcontroller implements Initializable {
     @FXML
+    RadioButton LiveMode;
+    @FXML
     private TextField no_processes;
     @FXML
-    private ComboBox SchedulerTypeBox;
+    private ComboBox SchedulerType;
+    @FXML
+    private TextField ProcessIDTF;
+    @FXML
+    private TextField ArrivalTimeTF;
+    @FXML
+    private TextField BurstTimeTF;
+    @FXML
+    private TextField PriorityTF;
     @FXML
     private HBox QuantumTime;
     @FXML
     private TextField QuantumTimeTF;
     @FXML
     private Button Resetbtn;
+    @FXML
+    private TableView<processInTable> processes;
+    @FXML
+    private TableColumn<processInTable, String> processIDCol;
+    @FXML
+    private TableColumn<processInTable, String> arrivalTimeCol;
+    @FXML
+    private TableColumn<processInTable, String> burstTimeCol;
+    @FXML
+    private TableColumn<processInTable, String> PriorityCol;
+    @FXML
+    private TableColumn<processInTable, String> remainingTimecol;
+    @FXML
+    private GridPane addingBar;
     @FXML
     private Button Computebtn;
     @FXML
@@ -35,13 +64,13 @@ public class FXMLcontroller implements Initializable {
     @FXML
     private Button generateChart;
     @FXML
-    private TextField ProcessIDTF;
+    private TextField ProcessIDTFL;
     @FXML
-    private TextField ArrivalTimeTF;
+    private TextField ArrivalTimeTFL;
     @FXML
-    private TextField BurstTimeTF;
+    private TextField BurstTimeTFL;
     @FXML
-    private TextField PriorityTF;
+    private TextField PriorityTFL;
     @FXML
     private Button Addbtn;
     @FXML
@@ -55,27 +84,175 @@ public class FXMLcontroller implements Initializable {
     @FXML
     private ScrollPane live_scroll_pane;
 
-    @FXML
-    private Text t;
-    int i = 1;
-//    function called first on openning scene
-    public void initialize(URL url, ResourceBundle rb) {
-//        chart_pane.setDisable(true);
-//        live_pane.setDisable(true);
-        QuantumTime.setVisible(false);
-        AnchorPane pane = new AnchorPane();
-        AnchorPane live = new AnchorPane();
-        live_scroll_pane.setContent(live);
-        Timeline tl = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
-            i++;
-//            System.out.println(i);
-            FxmlHelper.draw_process(live, live.getLayoutX() + i*25, 10);
-        }));
-        tl.setCycleCount(Animation.INDEFINITE);
-        tl.play();
-        chart_scroll_pane.setContent(pane);
-        FxmlHelper.draw_process(pane, pane.getLayoutX()+ 25, 10);
+    AnchorPane chart = new AnchorPane();
+    AnchorPane live = new AnchorPane();
+    SimpleIntegerProperty number_of_added_process = new SimpleIntegerProperty(0);
 
+    ObservableList<processInTable> data = FXCollections.observableArrayList();
+    int i = 1;
+
+    //    function called first on openning scene
+    public void initialize(URL url, ResourceBundle rb) {
+        //set up the columns in the table
+        processIDCol.setCellValueFactory(new PropertyValueFactory<processInTable, String>("ProcessID"));
+        arrivalTimeCol.setCellValueFactory(new PropertyValueFactory<processInTable, String>("ArrivalTime"));
+        burstTimeCol.setCellValueFactory(new PropertyValueFactory<processInTable, String>("BurstTime"));
+        PriorityCol.setCellValueFactory(new PropertyValueFactory<processInTable, String>("Priority"));
+        remainingTimecol.setCellValueFactory(new PropertyValueFactory<processInTable, String>("remainingTime"));
+
+
+        RESET();
+
+
+        LiveMode.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            //if RadioButton is selected
+            if (newValue) {
+//          disable gantt chart pane and table
+                live_pane.setDisable(false);
+
+            }
+            else {
+                live_pane.setDisable(true);
+            }
+        });
+
+        no_processes.textProperty().addListener((obs, oldText, newText) -> {
+            RESET();
+        });
+
+        number_of_added_process.addListener((obs, oldText, newText) -> {
+            if(newText.equals(Integer.parseInt(no_processes.getText()))) {
+                ProcessIDTF.clear();
+                ArrivalTimeTF.clear();
+                BurstTimeTF.clear();
+                PriorityTF.clear();
+                addingBar.setDisable(true);
+            }
+        });
 
     }
+
+    //    on action of compute button
+    @FXML
+    public void setNumber()
+    {
+        System.out.println("number of processes is set");
+        FxmlHelper.clear_table(addingBar, number_of_added_process, processes);
+    }
+//////////////////////////////////////////////////////////////////////////
+
+
+    //    on action of compute button
+    @FXML
+    public void COMPUTE()
+    {
+        System.out.println("compute is pressed");
+    }
+//////////////////////////////////////////////////////////////////////////
+
+    //    on action of generate chart button
+    @FXML
+    public void GENERATE()
+    {
+        System.out.println("Generate is pressed");
+//        chart_scroll_pane.setContent(chart);
+//        FxmlHelper.draw_process(chart, chart.getLayoutX()+ 25, 25);
+    }
+//////////////////////////////////////////////////////////////////////////
+
+    //    on action of generate chart button
+    @FXML
+    public void SchedulerChooser()
+    {
+        System.out.println("Scheduler has changed");
+        chart.getChildren().clear();
+//        System.out.println(SchedulerType.getValue());
+        switch (SchedulerType.getValue().toString()){
+            case "Round Robin":
+                FxmlHelper.clear_table(addingBar, number_of_added_process, processes);
+                QuantumTime.setVisible(true);
+                PriorityTF.setVisible(false);
+
+                break;
+            case "preemptive priority":
+            case"non-preemptive priority":
+                FxmlHelper.clear_table(addingBar, number_of_added_process, processes);
+                QuantumTime.setVisible(false);
+                PriorityTF.setVisible(true);
+                break;
+            default:
+                QuantumTime.setVisible(false);
+                PriorityTF.setVisible(false);
+        }
+    }
+///////////////////////////////////////////////////////////////////////////
+
+    //    on action of add Button
+    @FXML
+    public void ADD()
+    {
+        try {
+            processInTable newProcess;
+            switch (SchedulerType.getValue().toString()) {
+
+                case "preemptive priority":
+                case "non-preemptive priority":
+                    newProcess = new processInTable(ProcessIDTF.getText(),
+                            ArrivalTimeTF.getText(),
+                            BurstTimeTF.getText(),
+                            PriorityTF.getText());
+                    break;
+                default:
+                    newProcess = new processInTable(ProcessIDTF.getText(),
+                            ArrivalTimeTF.getText(),
+                            BurstTimeTF.getText());
+            }
+
+            //Get all the items from the table as a list, then add the new person to
+            //the list
+            processes.getItems().add(newProcess);
+            Process np = new Process(newProcess);
+            data.add(newProcess);
+            number_of_added_process.setValue(number_of_added_process.getValue() + 1);
+//        System.out.println(number_of_added_process);}
+        }catch (Exception e)
+        {
+            Alert A = new Alert(Alert.AlertType.WARNING);
+            A.setContentText("Please choose scheduler type ");
+            A.show();
+        }
+    }
+
+    //////////////////////////////////////////////////////////////////////////
+//    on action of reset Button
+    @FXML
+    public void RESET()
+    {
+        FxmlHelper.clear_table(addingBar, number_of_added_process, processes);
+        QuantumTime.setVisible(false);
+        PriorityTF.setVisible(false);
+        chart_pane.setDisable(true);
+        live_pane.setDisable(true);
+
+//        data.get(0).setRemainingTime("6");
+//        processes.getItems().clear();
+//        processes.setDisable(true);
+    }
+//////////////////////////////////////////////////////////////////////////
+
+    //    on action of Run button
+    @FXML
+    public void RUN()
+    {
+        System.out.println("Run is pressed");
+//        live_scroll_pane.setContent(live);
+//
+//        Timeline tl = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
+//            i++;
+//            FxmlHelper.draw_process(live, live.getLayoutX() + i*25, 25);
+//        }));
+//        tl.setCycleCount(Animation.INDEFINITE);
+//        tl.play();
+    }
+
 }
