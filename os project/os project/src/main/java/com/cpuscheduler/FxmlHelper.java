@@ -16,7 +16,7 @@ public class FxmlHelper {
         number_of_added_process.set(0);
         processes.getItems().clear();
     }
-    public static void draw_process(Pane pane, double x, double width){
+    public static void draw_process(Pane pane, double x, double width, String id, int start_time){
         Rectangle process_block = new Rectangle();
         process_block.yProperty().bind(pane.heightProperty().divide(2));
         process_block.setX(x);
@@ -26,7 +26,7 @@ public class FxmlHelper {
 
 
         Line l= new Line();
-        l.setEndX(x+width);l.setStartX(x+width);
+        l.setEndX(x);l.setStartX(x);
         l.startYProperty().bind(process_block.yProperty());
         l.endYProperty().bind(process_block.yProperty().add(process_block.heightProperty()));
         l.setStroke(Color.BLACK);
@@ -34,14 +34,14 @@ public class FxmlHelper {
 
         Text label;
         label = new Text();
-        label.setText("0");
+        label.setText(""+start_time);
         label.xProperty().bind(l.startXProperty().subtract(5));
         label.yProperty().bind(l.endYProperty().add(15));
         label.setStyle("-fx-font-size:15px;-fx-fill:black;");
 
         Text process_label;
         process_label = new Text();
-        process_label.setText("P1");
+        process_label.setText(id);
         process_label.xProperty().bind(process_block.xProperty().add(process_block.widthProperty().divide(3)));
         process_label.yProperty().bind(process_block.yProperty().add(process_block.heightProperty().divide(2)));
         process_label.setStyle("-fx-font-size:15px;-fx-fill:red;");
