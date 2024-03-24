@@ -88,7 +88,7 @@ public class FXMLcontroller implements Initializable {
     AnchorPane live = new AnchorPane();
     SimpleIntegerProperty number_of_added_process = new SimpleIntegerProperty(0);
 
-    ObservableList<processInTable> data = FXCollections.observableArrayList();
+    ObservableList<Process> data = FXCollections.observableArrayList();
     int i = 1;
 
     //    function called first on openning scene
@@ -109,7 +109,6 @@ public class FXMLcontroller implements Initializable {
             if (newValue) {
 //          disable gantt chart pane and table
                 live_pane.setDisable(false);
-
             }
             else {
                 live_pane.setDisable(true);
@@ -121,13 +120,14 @@ public class FXMLcontroller implements Initializable {
         });
 
         number_of_added_process.addListener((obs, oldText, newText) -> {
-            if(newText.equals(Integer.parseInt(no_processes.getText()))) {
-                ProcessIDTF.clear();
-                ArrivalTimeTF.clear();
-                BurstTimeTF.clear();
-                PriorityTF.clear();
-                addingBar.setDisable(true);
-            }
+                if (newText.equals(Integer.parseInt(no_processes.getText()))) {
+                    ProcessIDTF.clear();
+                    ArrivalTimeTF.clear();
+                    BurstTimeTF.clear();
+                    PriorityTF.clear();
+                    addingBar.setDisable(true);
+                    chart_pane .setDisable(false);
+                }
         });
 
     }
@@ -147,6 +147,27 @@ public class FXMLcontroller implements Initializable {
     public void COMPUTE()
     {
         System.out.println("compute is pressed");
+        switch (SchedulerType.getValue().toString()){
+            case "FCFS":
+
+                break;
+            case "preemptive SJF":
+
+                break;
+            case"non-preemptive SJF":
+
+                break;
+            case "Round Robin":
+
+                break;
+            case "preemptive priority":
+
+                break;
+            case"non-preemptive priority":
+
+                break;
+
+        }
     }
 //////////////////////////////////////////////////////////////////////////
 
@@ -155,8 +176,14 @@ public class FXMLcontroller implements Initializable {
     public void GENERATE()
     {
         System.out.println("Generate is pressed");
-//        chart_scroll_pane.setContent(chart);
-//        FxmlHelper.draw_process(chart, chart.getLayoutX()+ 25, 25);
+        for (int i = 0; i < data.size(); i++) {
+            System.out.println(data.get(i).getProcess_ID());
+            System.out.println(data.get(i).getArrivalTime());
+            System.out.println(data.get(i).getBurstTime());
+            System.out.println(data.get(i).getPriority());
+        }
+        chart_scroll_pane.setContent(chart);
+        FxmlHelper.draw_process(chart, chart.getLayoutX()+ 25, 25,"p"+1,0);
     }
 //////////////////////////////////////////////////////////////////////////
 
@@ -166,10 +193,12 @@ public class FXMLcontroller implements Initializable {
     {
         System.out.println("Scheduler has changed");
         chart.getChildren().clear();
+        AvgTurnaroundTimeTF.clear();
+        AvgWaitingTimeTF.clear();
 //        System.out.println(SchedulerType.getValue());
         switch (SchedulerType.getValue().toString()){
             case "Round Robin":
-                FxmlHelper.clear_table(addingBar, number_of_added_process, processes);
+//                FxmlHelper.clear_table(addingBar, number_of_added_process, processes);
                 QuantumTime.setVisible(true);
                 PriorityTF.setVisible(false);
 
@@ -191,6 +220,12 @@ public class FXMLcontroller implements Initializable {
     @FXML
     public void ADD()
     {
+        Alert A = new Alert(Alert.AlertType.WARNING);
+        if(no_processes.getText().length()==0) {
+            A.setContentText("Please choose number of processes");
+            A.show();
+        }
+        else
         try {
             processInTable newProcess;
             switch (SchedulerType.getValue().toString()) {
@@ -208,19 +243,18 @@ public class FXMLcontroller implements Initializable {
                             BurstTimeTF.getText());
             }
 
-            //Get all the items from the table as a list, then add the new person to
-            //the list
+            //Get all the items from the table as a list, then add the new process to the list
             processes.getItems().add(newProcess);
             Process np = new Process(newProcess);
-            data.add(newProcess);
+            data.add(np);
             number_of_added_process.setValue(number_of_added_process.getValue() + 1);
-//        System.out.println(number_of_added_process);}
+            System.out.println(number_of_added_process);
         }catch (Exception e)
         {
-            Alert A = new Alert(Alert.AlertType.WARNING);
             A.setContentText("Please choose scheduler type ");
             A.show();
         }
+
     }
 
     //////////////////////////////////////////////////////////////////////////
