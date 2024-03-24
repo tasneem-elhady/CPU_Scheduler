@@ -8,6 +8,9 @@ public class Process {
     private int Priority;
     private int Start_time;
     private int end_time;
+    private int remaining_burst_time;
+    private int completed_time;
+    private boolean first_response=true;
 
     public Process(processInTable processIndex) {
         this.processIndex = processIndex;
@@ -31,7 +34,6 @@ public class Process {
         this.remaining_burst_time = remaining_burst_time;
     }
 
-    private int remaining_burst_time;
     public Process(int process_ID, int arrivalTime, int burstTime, int priority) {
         this.processID = process_ID;
         ArrivalTime = arrivalTime;
@@ -42,6 +44,7 @@ public class Process {
         this.processID = process_ID;
         ArrivalTime = arrivalTime;
         BurstTime = burstTime;
+        this.remaining_burst_time = burstTime;
     }
     public int getBurstTime() {
         return BurstTime;
@@ -90,11 +93,48 @@ public class Process {
         this.end_time = end_time;
     }
 
+    public int getCompleted_time() {
+        return completed_time;
+    }
+
+    public void setCompleted_time(int completed_time) {
+        this.completed_time = completed_time;
+    }
+
+    public boolean isFirst_response() {
+        return first_response;
+    }
+
+    public void setFirst_response(boolean first_response) {
+        this.first_response = first_response;
+    }
+
     public processInTable getProcessIndex() {
         return processIndex;
     }
 
     public void setProcessIndex(processInTable processIndex) {
         this.processIndex = processIndex;
+    }
+
+    public int waitingTime(){
+
+        return (getEnd_time()-getArrivalTime()-getBurstTime());
+    }
+
+    public int turnAroundTime(){
+
+        return (getEnd_time()-getArrivalTime());
+    }
+
+    public int responseTime(){
+
+        return (getStart_time()-getArrivalTime());
+    }
+
+     public void printProcess(){
+        System.out.println(getProcess_ID()+" : arrival= "+getArrivalTime()+" , burst= "+ getBurstTime()
+                +" , Start time= "+getStart_time()+" , End time= "+getEnd_time());
+        System.out.println("waiting time = "+waitingTime()+" , turnaround time= "+ turnAroundTime());
     }
 }
