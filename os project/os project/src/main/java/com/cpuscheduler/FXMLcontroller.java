@@ -18,6 +18,8 @@ import javafx.scene.layout.HBox;
 import javafx.util.Duration;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Queue;
 import java.util.ResourceBundle;
 
 public class FXMLcontroller implements Initializable {
@@ -72,6 +74,8 @@ public class FXMLcontroller implements Initializable {
     @FXML
     private TextField PriorityTFL;
     @FXML
+    private Label priorityL;
+    @FXML
     private Button Addbtn;
     @FXML
     private Button Runbtn;
@@ -90,6 +94,7 @@ public class FXMLcontroller implements Initializable {
 
     ObservableList<Process> data = FXCollections.observableArrayList();
     int i = 1;
+    double x = live.getLayoutX();
 
     //    function called first on openning scene
     public void initialize(URL url, ResourceBundle rb) {
@@ -100,18 +105,21 @@ public class FXMLcontroller implements Initializable {
         PriorityCol.setCellValueFactory(new PropertyValueFactory<processInTable, String>("Priority"));
         remainingTimecol.setCellValueFactory(new PropertyValueFactory<processInTable, String>("remainingTime"));
 
-
         RESET();
-
 
         LiveMode.selectedProperty().addListener((observable, oldValue, newValue) -> {
             //if RadioButton is selected
             if (newValue) {
-//          disable gantt chart pane and table
+                RESET();
                 live_pane.setDisable(false);
+                no_processes.setDisable(true);
+                addingBar.setDisable(true);
             }
             else {
                 live_pane.setDisable(true);
+                no_processes.setDisable(false);
+                addingBar.setDisable(false);
+
             }
         });
 
@@ -120,7 +128,7 @@ public class FXMLcontroller implements Initializable {
         });
 
         number_of_added_process.addListener((obs, oldText, newText) -> {
-                if (newText.equals(Integer.parseInt(no_processes.getText()))) {
+            if (!LiveMode.isSelected() && newText.equals(Integer.parseInt(no_processes.getText()))) {
                     ProcessIDTF.clear();
                     ArrivalTimeTF.clear();
                     BurstTimeTF.clear();
@@ -175,15 +183,27 @@ public class FXMLcontroller implements Initializable {
     @FXML
     public void GENERATE()
     {
-        System.out.println("Generate is pressed");
-        for (int i = 0; i < data.size(); i++) {
-            System.out.println(data.get(i).getProcess_ID());
-            System.out.println(data.get(i).getArrivalTime());
-            System.out.println(data.get(i).getBurstTime());
-            System.out.println(data.get(i).getPriority());
-        }
-        chart_scroll_pane.setContent(chart);
-        FxmlHelper.draw_process(chart, chart.getLayoutX()+ 25, 25,"p"+1,0);
+//        System.out.println("Generate is pressed");
+//        for (int i = 0; i < data.size(); i++) {
+//            System.out.println(data.get(i).getProcess_ID());
+//            System.out.println(data.get(i).getArrivalTime());
+//            System.out.println(data.get(i).getBurstTime());
+//            System.out.println(data.get(i).getPriority());
+//        }
+          chart_scroll_pane.setContent(chart);
+//        FxmlHelper.draw_process(chart, chart.getLayoutX()+ 25, 25,"p"+1,0);
+        ArrayList<Process> processes = new ArrayList<>();
+        processes.add(new Process(1,0,10));
+        processes.add(new Process(2,0,1));
+        processes.add(new Process(3,0,2));
+        processes.add(new Process(4,0,1));
+        processes.add(new Process(5,0,5));
+
+
+        Queue<LiveTime> output;
+        RoundRobin RR = new RoundRobin();
+        output=(RR).Schedule(processes,2);
+        FxmlHelper.draw_chart_RR(output,chart);
     }
 //////////////////////////////////////////////////////////////////////////
 
@@ -201,6 +221,8 @@ public class FXMLcontroller implements Initializable {
 //                FxmlHelper.clear_table(addingBar, number_of_added_process, processes);
                 QuantumTime.setVisible(true);
                 PriorityTF.setVisible(false);
+                PriorityTFL.setVisible(false);
+                priorityL.setVisible(false);
 
                 break;
             case "preemptive priority":
@@ -208,10 +230,14 @@ public class FXMLcontroller implements Initializable {
                 FxmlHelper.clear_table(addingBar, number_of_added_process, processes);
                 QuantumTime.setVisible(false);
                 PriorityTF.setVisible(true);
+                PriorityTFL.setVisible(true);
+                priorityL.setVisible(true);
                 break;
             default:
                 QuantumTime.setVisible(false);
                 PriorityTF.setVisible(false);
+                PriorityTFL.setVisible(false);
+                priorityL.setVisible(false);
         }
     }
 ///////////////////////////////////////////////////////////////////////////
@@ -221,7 +247,7 @@ public class FXMLcontroller implements Initializable {
     public void ADD()
     {
         Alert A = new Alert(Alert.AlertType.WARNING);
-        if(no_processes.getText().length()==0) {
+        if(no_processes.getText().length() == 0 && !LiveMode.isSelected()) {
             A.setContentText("Please choose number of processes");
             A.show();
         }
@@ -232,15 +258,33 @@ public class FXMLcontroller implements Initializable {
 
                 case "preemptive priority":
                 case "non-preemptive priority":
-                    newProcess = new processInTable(ProcessIDTF.getText(),
-                            ArrivalTimeTF.getText(),
-                            BurstTimeTF.getText(),
-                            PriorityTF.getText());
+                    if(LiveMode.isSelected())
+                    {
+                        newProcess = new processInTable(ProcessIDTFL.getText(),
+                            ArrivalTimeTFL.getText(),
+                            BurstTimeTFL.getText(),
+                            PriorityTFL.getText());
+                    }
+                    else {
+                        newProcess = new processInTable(ProcessIDTF.getText(),
+                                ArrivalTimeTF.getText(),
+                                BurstTimeTF.getText(),
+                                PriorityTF.getText());
+                    }
+
                     break;
                 default:
-                    newProcess = new processInTable(ProcessIDTF.getText(),
-                            ArrivalTimeTF.getText(),
-                            BurstTimeTF.getText());
+                    if(LiveMode.isSelected())
+                    {
+                        newProcess = new processInTable(ProcessIDTFL.getText(),
+                                ArrivalTimeTFL.getText(),
+                                BurstTimeTFL.getText());
+                    }
+                    else {
+                        newProcess = new processInTable(ProcessIDTF.getText(),
+                                ArrivalTimeTF.getText(),
+                                BurstTimeTF.getText());
+                    }
             }
 
             //Get all the items from the table as a list, then add the new process to the list
@@ -249,12 +293,13 @@ public class FXMLcontroller implements Initializable {
             data.add(np);
             number_of_added_process.setValue(number_of_added_process.getValue() + 1);
             System.out.println(number_of_added_process);
+            System.out.println(data);
         }catch (Exception e)
         {
+            System.out.println(e);
             A.setContentText("Please choose scheduler type ");
             A.show();
         }
-
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -265,9 +310,12 @@ public class FXMLcontroller implements Initializable {
         FxmlHelper.clear_table(addingBar, number_of_added_process, processes);
         QuantumTime.setVisible(false);
         PriorityTF.setVisible(false);
+        PriorityTFL.setVisible(false);
+        priorityL.setVisible(false);
         chart_pane.setDisable(true);
         live_pane.setDisable(true);
-
+        no_processes.setDisable(false);
+        addingBar.setDisable(false);
 //        data.get(0).setRemainingTime("6");
 //        processes.getItems().clear();
 //        processes.setDisable(true);
@@ -279,14 +327,40 @@ public class FXMLcontroller implements Initializable {
     public void RUN()
     {
         System.out.println("Run is pressed");
-//        live_scroll_pane.setContent(live);
-//
-//        Timeline tl = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
-//            i++;
-//            FxmlHelper.draw_process(live, live.getLayoutX() + i*25, 25);
-//        }));
-//        tl.setCycleCount(Animation.INDEFINITE);
-//        tl.play();
+        live_scroll_pane.setContent(live);
+        Timeline tl = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
+            i++;
+            x+=30;
+//             chosen_process(
+           FxmlHelper.draw_process(live,x , 30,"PP",0);
+        }));
+        tl.setCycleCount(Animation.INDEFINITE);
+        tl.play();
     }
-
+//    @FXML
+//    public void ADD_LIVE()
+//    {
+//        Process newProcess;
+//        try {
+//            switch (SchedulerType.getValue().toString()) {
+//
+//                case "preemptive priority":
+//                case "non-preemptive priority":
+//                    newProcess = new Process(Integer.parseInt(ProcessIDTFL.getText()),
+//                            Integer.parseInt(ArrivalTimeTFL.getText()),
+//                            Integer.parseInt(BurstTimeTFL.getText()),
+//                            Integer.parseInt(PriorityTFL.getText()));
+//                    break;
+//                default:
+//                    newProcess = new Process(Integer.parseInt(ProcessIDTFL.getText()),
+//                            Integer.parseInt(ArrivalTimeTFL.getText()),
+//                            Integer.parseInt(BurstTimeTFL.getText()));
+//            }
+//            data.add(newProcess);
+//            System.out.println(data);
+//        }catch (Exception e){
+//            A.setContentText("Please choose scheduler type ");
+//            A.show();
+//        }
+//    }
 }

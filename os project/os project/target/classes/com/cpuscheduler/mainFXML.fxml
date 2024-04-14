@@ -158,7 +158,7 @@
                                                         <Font name="Berlin Sans FB Bold" size="14.0" />
                                                     </font>
                                                 </Label>
-                                                <Label text="Priority" GridPane.rowIndex="3">
+                                                <Label fx:id="priorityL" text="Priority" GridPane.rowIndex="3">
                                                     <font>
                                                         <Font name="Berlin Sans FB Bold" size="14.0" />
                                                     </font>
@@ -166,7 +166,6 @@
                                                 <TextField fx:id="ProcessIDTFL" GridPane.columnIndex="1" />
                                                 <TextField fx:id="ArrivalTimeTFL" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                                                 <TextField fx:id="BurstTimeTFL" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                                                <TextField GridPane.columnIndex="1" GridPane.rowIndex="3" />
                                                 <TextField fx:id="PriorityTFL" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                                                 <Button fx:id="Addbtn" mnemonicParsing="false" onAction="#ADD" style="-fx-background-color: black;" text="Add" textFill="#faeded" GridPane.rowIndex="4" />
                                                 <HBox prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="4">

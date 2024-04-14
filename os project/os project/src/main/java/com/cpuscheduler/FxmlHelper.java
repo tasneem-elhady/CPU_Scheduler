@@ -58,7 +58,7 @@ public class FxmlHelper {
         int end_of_process = 0;
         for (Process p :processes)
         {
-            if (end_of_process != p.getStart_time())
+            if (end_of_process != p.getStart_time()+p.getBurstTime())
             {
                 Line l= new Line();
                 l.setEndX(x);l.setStartX(x);
@@ -80,6 +80,35 @@ public class FxmlHelper {
             draw_process(pane, x, 25 * p.getBurstTime(), "P"+p.getProcess_ID(), p.getStart_time());
             end_of_process = p.getEnd_time();
             x += 25 * p.getBurstTime();
+        }
+    }
+    public static void draw_chart_RR(Queue<LiveTime> processes,Pane pane){
+        double x = pane.getLayoutX()+25;
+        int end_of_process = 0;
+        for (LiveTime p :processes)
+        {
+            if (end_of_process != p.getLiveTime()+ p.getCompletedTime())
+            {
+                Line l= new Line();
+                l.setEndX(x);l.setStartX(x);
+                l.startYProperty().bind(pane.heightProperty().divide(2));
+                l.endYProperty().bind(l.startYProperty().add(pane.heightProperty().divide(3)));
+                l.setStroke(Color.BLACK);
+                l.setStrokeWidth(1);
+                Text label;
+                label = new Text();
+                label.setText(""+end_of_process);
+                label.xProperty().bind(l.startXProperty().subtract(5));
+                label.yProperty().bind(l.endYProperty().add(15));
+                label.setStyle("-fx-font-size:15px;-fx-fill:black;");
+                pane.getChildren().add(label);
+                pane.getChildren().add(l);
+                x += ((p.getLiveTime() - end_of_process)*25);
+            }
+
+            draw_process(pane, x, 25 * p.getCompletedTime(), "P"+p.getP().getProcess_ID(), p.getLiveTime());
+            end_of_process = p.getLiveTime() + p.getCompletedTime();
+            x += 25 * p.getCompletedTime();
         }
     }
 }
