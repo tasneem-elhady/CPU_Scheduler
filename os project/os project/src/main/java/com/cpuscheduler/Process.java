@@ -1,6 +1,6 @@
 package com.cpuscheduler;
 
-public class Process {
+public class Process implements Comparable<Process> {
     private processInTable processIndex;
     private int processID;
     private int ArrivalTime;
@@ -141,5 +141,10 @@ public class Process {
     public String toString(){
         return (getProcess_ID()+" : arrival= "+getArrivalTime()+" , burst= "+ getBurstTime() + ", priority = " + getPriority()
                 +" , Start time= "+getStart_time()+" , End time= "+getEnd_time());
+    }
+
+    @Override
+    public int compareTo(Process o) {
+        return this.getArrivalTime()-((Process)o).getArrivalTime();
     }
 }
