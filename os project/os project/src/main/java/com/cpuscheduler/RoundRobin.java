@@ -55,10 +55,11 @@ public class RoundRobin implements Schedular{
 
     public Queue<LiveTime> Schedule(ArrayList<Process> processes,int quantum_time) {
         int diff, no_of_switches=0,time=0;
+        boolean first =true;
         setNo_of_processes(processes.size());
         processesCopy= (ArrayList<Process>) processes.clone();
-//        processesCopy=new ArrayList<>(no_of_processes);
-//        Collections.copy(processesCopy,processesCopy);
+        Collections.sort(processesCopy);
+
         Queue<Process> Output = new LinkedList<Process>();
         ArrayList<Process> completedProcesses = new ArrayList<>();
         while(!processesCopy.isEmpty()){
@@ -66,50 +67,61 @@ public class RoundRobin implements Schedular{
 //            while (pItr.hasNext()){
 //                Process p=pItr.next();
             //check if there is only one process in the arraylist run it totally without slots
+            while (checkNoPAtTime(processesCopy,time) && first){
+                time++;
+            }
+            first=false;
             if(processesCopy.size()==1){
-                Process p=processesCopy.get(0);
-                Output.add(p);
-                p.setCompleted_time(p.getRemaining_burst_time());
-                p.setRemaining_burst_time(0);
-                p.setEnd_time(time);
-                completedProcesses.add(p);
-                liveTimeQueue.add(new LiveTime(time,p.getRemaining_burst_time(), p.getCompleted_time(), (p.getBurstTime() - p.getRemaining_burst_time()),p));
-                time+=p.getRemaining_burst_time();
+                while (processesCopy.get(0).getArrivalTime()>time){
+                    time++;
+                }
+                    Process p = processesCopy.get(0);
+                    Output.add(p);
+                    p.setCompleted_time(p.getRemaining_burst_time());
+                    p.setEnd_time(time+ p.getRemaining_burst_time());
+                    completedProcesses.add(p);
+                    liveTimeQueue.add(new LiveTime(time, 0, p.getCompleted_time(), (p.getBurstTime() - p.getRemaining_burst_time()), p));
+                    time += p.getRemaining_burst_time();
+                    p.setRemaining_burst_time(0);
+
+
 
             }else {
                 for (Process p : processesCopy) {
-                    if (p.isFirst_response()) {
-                        p.setStart_time(time);
-                        p.setFirst_response(false);
-                    }
-                    diff = p.getRemaining_burst_time() - quantum_time;
-                    if (diff > 0) {
-                        p.setCompleted_time(quantum_time);
+                    if(p.getArrivalTime()<=time){
+                        if (p.isFirst_response()) {
+                            p.setStart_time(time);
+                            p.setFirst_response(false);
+                        }
+                        diff = p.getRemaining_burst_time() - quantum_time;
+                        if (diff > 0) {
+                            p.setCompleted_time(quantum_time);
 //                    completedTime.add(quantum_time);
-                        p.setRemaining_burst_time(diff);
+                            p.setRemaining_burst_time(diff);
 //                    remainingTime.add(diff);
-                        Output.add(p);
+                            Output.add(p);
 //                    accumlativeCompletedTime.add(p.getBurstTime()-p.getRemaining_time());
 //                    processesCopy.add(p);
-                        liveTimeQueue.add(new LiveTime(time,p.getRemaining_burst_time(), p.getCompleted_time(), (p.getBurstTime() - p.getRemaining_burst_time()),p));
-                        time += quantum_time;
-                    } else {
-                        p.setCompleted_time(p.getRemaining_burst_time());
+                            liveTimeQueue.add(new LiveTime(time, p.getRemaining_burst_time(), p.getCompleted_time(), (p.getBurstTime() - p.getRemaining_burst_time()), p));
+                            time += quantum_time;
+                        } else {
+                            p.setCompleted_time(p.getRemaining_burst_time());
 //                    completedTime.add(p.getRemaining_time());
-                        Output.add(p);
+                            Output.add(p);
 //                    no_of_processes--;
-                        p.setEnd_time(time+p.getRemaining_burst_time());
-                        liveTimeQueue.add(new LiveTime(time,p.getRemaining_burst_time(), p.getCompleted_time(), (p.getBurstTime() - p.getRemaining_burst_time()),p));
-                        time += p.getRemaining_burst_time();
-                        p.setRemaining_burst_time(0);
+                            p.setEnd_time(time + p.getRemaining_burst_time());
+                            liveTimeQueue.add(new LiveTime(time, 0, p.getCompleted_time(), (p.getBurstTime() - p.getRemaining_burst_time()), p));
+                            time += p.getRemaining_burst_time();
+                            p.setRemaining_burst_time(0);
 //                    remainingTime.add(0);
 //                    accumlativeCompletedTime.add(p.getBurstTime()-p.getRemaining_time());
-                        completedProcesses.add(p);
+                            completedProcesses.add(p);
 //                    processesCopy.remove(p);
 //                    pItr.remove();
 //                    pItr=processesCopy.listIterator();
+                        }
+                        no_of_switches++;
                     }
-                    no_of_switches++;
                 }
             }
 //            while (!completedProcesses.isEmpty()){
@@ -127,6 +139,19 @@ public class RoundRobin implements Schedular{
         }
 //        return Output;
         return liveTimeQueue;
+    }
+
+
+    public boolean checkNoPAtTime(ArrayList<Process> processes, int time){
+        boolean flag_no=true;
+        for (Process p:processes
+             ) {
+            if(p.getArrivalTime()==time) {
+                flag_no = false;
+                break;
+            }
+        }
+        return flag_no;
     }
 
     @Override
@@ -150,16 +175,16 @@ public class RoundRobin implements Schedular{
 
     public static void main(String[] args) {
         ArrayList<Process> processes = new ArrayList<>();
-        processes.add(new Process(1,0,10));
-        processes.add(new Process(2,0,1));
-        processes.add(new Process(3,0,2));
-        processes.add(new Process(4,0,1));
-        processes.add(new Process(5,0,5));
+        processes.add(new Process(1,3,10));
+        processes.add(new Process(2,8,1));
+        processes.add(new Process(3,2,2));
+//        processes.add(new Process(4,0,1));
+//        processes.add(new Process(5,0,5));
 
 
         Queue<LiveTime> output;
         RoundRobin RR = new RoundRobin();
-        output=(RR).Schedule(processes,3);
+        output=(RR).Schedule(processes,2);
 //        int i=0;
 //        for (Process p:output) {
 //            System.out.print(" | "+p.getProcess_ID());
