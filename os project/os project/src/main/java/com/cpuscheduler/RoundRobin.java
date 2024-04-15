@@ -73,7 +73,7 @@ public class RoundRobin implements Schedular{
                 p.setRemaining_burst_time(0);
                 p.setEnd_time(time);
                 completedProcesses.add(p);
-                liveTimeQueue.add(new LiveTime(time,p.getRemaining_burst_time(),p.getCompleted_time(),(p.getBurstTime()-p.getRemaining_burst_time())));
+                liveTimeQueue.add(new LiveTime(time,p.getRemaining_burst_time(), p.getCompleted_time(), (p.getBurstTime() - p.getRemaining_burst_time()),p));
                 time+=p.getRemaining_burst_time();
 
             }else {
