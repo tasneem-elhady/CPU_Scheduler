@@ -56,18 +56,18 @@ public class RoundRobin implements Schedular{
     public Queue<LiveTime> Schedule(ArrayList<Process> processes,int quantum_time) {
         int diff, no_of_switches=0,time=0;
         setNo_of_processes(processes.size());
-        processesCopy= new ArrayList<>(processes);
+        processesCopy= (ArrayList<Process>) processes.clone();
 //        processesCopy=new ArrayList<>(no_of_processes);
-//        Collections.copy(processesCopy,processes);
+//        Collections.copy(processesCopy,processesCopy);
         Queue<Process> Output = new LinkedList<Process>();
         ArrayList<Process> completedProcesses = new ArrayList<>();
-        while(!processes.isEmpty()){
-//            ListIterator<Process> pItr = processes.listIterator();
+        while(!processesCopy.isEmpty()){
+//            ListIterator<Process> pItr = processesCopy.listIterator();
 //            while (pItr.hasNext()){
 //                Process p=pItr.next();
             //check if there is only one process in the arraylist run it totally without slots
-            if(processes.size()==1){
-                Process p=processes.get(0);
+            if(processesCopy.size()==1){
+                Process p=processesCopy.get(0);
                 Output.add(p);
                 p.setCompleted_time(p.getRemaining_burst_time());
                 p.setRemaining_burst_time(0);
@@ -77,7 +77,7 @@ public class RoundRobin implements Schedular{
                 time+=p.getRemaining_burst_time();
 
             }else {
-                for (Process p : processes) {
+                for (Process p : processesCopy) {
                     if (p.isFirst_response()) {
                         p.setStart_time(time);
                         p.setFirst_response(false);
@@ -90,7 +90,7 @@ public class RoundRobin implements Schedular{
 //                    remainingTime.add(diff);
                         Output.add(p);
 //                    accumlativeCompletedTime.add(p.getBurstTime()-p.getRemaining_time());
-//                    processes.add(p);
+//                    processesCopy.add(p);
                         liveTimeQueue.add(new LiveTime(time,p.getRemaining_burst_time(), p.getCompleted_time(), (p.getBurstTime() - p.getRemaining_burst_time()),p));
                         time += quantum_time;
                     } else {
@@ -105,22 +105,22 @@ public class RoundRobin implements Schedular{
 //                    remainingTime.add(0);
 //                    accumlativeCompletedTime.add(p.getBurstTime()-p.getRemaining_time());
                         completedProcesses.add(p);
-//                    processes.remove(p);
+//                    processesCopy.remove(p);
 //                    pItr.remove();
-//                    pItr=processes.listIterator();
+//                    pItr=processesCopy.listIterator();
                     }
                     no_of_switches++;
                 }
             }
 //            while (!completedProcesses.isEmpty()){
 //                Process p=
-//                processes.remove(p);
+//                processesCopy.remove(p);
 //                completedProcesses.remove(p);
 //            }
-            //remove the completed processes from the current processes arraylist
+            //remove the completed processesCopy from the current processesCopy arraylist
             if(!completedProcesses.isEmpty()) {
                 for (Process p : completedProcesses) {
-                    processes.remove(p);
+                    processesCopy.remove(p);
 //                completedProcesses.remove(p);
                 }
             }
@@ -176,8 +176,8 @@ public class RoundRobin implements Schedular{
 //            i++;
         }
 
-        System.out.println("Average waiting time = "+RR.calculate_avg_wait_time(RR.getProcessesCopy()));
-        System.out.println("Average turnaround time = "+RR.calculate_avg_turn_around_time(RR.getProcessesCopy()));
+        System.out.println("Average waiting time = "+RR.calculate_avg_wait_time(processes));
+        System.out.println("Average turnaround time = "+RR.calculate_avg_turn_around_time(processes));
 
 
     }
