@@ -15,8 +15,9 @@ public class Process {
     public Process(processInTable processIndex) {
         this.processIndex = processIndex;
         this.processID = Integer.parseInt(processIndex.getProcessID());
-        ArrivalTime = Integer.parseInt(processIndex.getArrivalTime());
-        BurstTime = Integer.parseInt(processIndex.getBurstTime());
+        this.ArrivalTime = Integer.parseInt(processIndex.getArrivalTime());
+        this.BurstTime = Integer.parseInt(processIndex.getBurstTime());
+        this.remaining_burst_time = Integer.parseInt(processIndex.getBurstTime());
         try {
             Priority = Integer.parseInt(processIndex.getPriority());
         }catch (Exception e)
@@ -42,8 +43,8 @@ public class Process {
     }
     public Process(int process_ID, int arrivalTime, int burstTime) {
         this.processID = process_ID;
-        ArrivalTime = arrivalTime;
-        BurstTime = burstTime;
+        this.ArrivalTime = arrivalTime;
+        this.BurstTime = burstTime;
         this.remaining_burst_time = burstTime;
     }
     public int getBurstTime() {
@@ -136,5 +137,9 @@ public class Process {
         System.out.println(getProcess_ID()+" : arrival= "+getArrivalTime()+" , burst= "+ getBurstTime()
                 +" , Start time= "+getStart_time()+" , End time= "+getEnd_time());
         System.out.println("waiting time = "+waitingTime()+" , turnaround time= "+ turnAroundTime());
+    }
+    public String toString(){
+        return (getProcess_ID()+" : arrival= "+getArrivalTime()+" , burst= "+ getBurstTime() + ", priority = " + getPriority()
+                +" , Start time= "+getStart_time()+" , End time= "+getEnd_time());
     }
 }

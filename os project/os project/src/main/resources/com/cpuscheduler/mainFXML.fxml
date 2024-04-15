@@ -79,7 +79,7 @@
                                     <children>
                                         <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
                                             <children>
-                                                <TableView fx:id="processes" editable="true" prefHeight="226.0" prefWidth="690.0">
+                                                <TableView fx:id="processesIntable" editable="true" prefHeight="226.0" prefWidth="690.0">
                                                     <columns>
                                                         <TableColumn fx:id="processIDCol" prefWidth="139.2000396847725" text="process ID" />
                                                         <TableColumn fx:id="arrivalTimeCol" prefWidth="152.8000030517578" text="Arrival Time" />

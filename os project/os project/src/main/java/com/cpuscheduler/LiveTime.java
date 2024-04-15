@@ -5,7 +5,7 @@ public class LiveTime {
     private  int remainingTime;
     private  int completedTime;
     private  int accumlativeTime;
-
+    public Process p;
     public Process getP() {
         return p;
     }
@@ -14,7 +14,7 @@ public class LiveTime {
         this.p = p;
     }
 
-    private Process p;
+
 
     public LiveTime(int liveTime, int remainingTime, int completedTime, int accumlativeTime, Process p) {
         this.liveTime = liveTime;
@@ -72,6 +72,10 @@ public class LiveTime {
     public void printLiveTime(){
         p.printProcess();
         System.out.println("@ Time= "+getLiveTime()+" : Accumulative completed = "+getAccumlativeTime()
+                +", completed in this period "+" = "+getCompletedTime()+" , remaining= "+getRemainingTime());
+    }
+    public String toString (){
+        return ("@ Time= "+getLiveTime()+" : Accumulative completed = "+getAccumlativeTime()
                 +", completed in this period "+" = "+getCompletedTime()+" , remaining= "+getRemainingTime());
     }
 }

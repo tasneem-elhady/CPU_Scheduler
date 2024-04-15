@@ -4,10 +4,6 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -44,7 +40,7 @@ public class FXMLcontroller implements Initializable {
     @FXML
     private Button Resetbtn;
     @FXML
-    private TableView<processInTable> processes;
+    private TableView<processInTable> processesIntable;
     @FXML
     private TableColumn<processInTable, String> processIDCol;
     @FXML
@@ -92,7 +88,10 @@ public class FXMLcontroller implements Initializable {
     AnchorPane live = new AnchorPane();
     SimpleIntegerProperty number_of_added_process = new SimpleIntegerProperty(0);
 
-    ObservableList<Process> data = FXCollections.observableArrayList();
+    ArrayList<Process> data = new ArrayList<>();
+
+    Schedular schedule;
+
     int i = 1;
     double x = live.getLayoutX();
 
@@ -135,6 +134,7 @@ public class FXMLcontroller implements Initializable {
                     PriorityTF.clear();
                     addingBar.setDisable(true);
                     chart_pane .setDisable(false);
+                    schedule = FxmlHelper.initializeScheduler(SchedulerType.getValue().toString());
                 }
         });
 
@@ -145,7 +145,7 @@ public class FXMLcontroller implements Initializable {
     public void setNumber()
     {
         System.out.println("number of processes is set");
-        FxmlHelper.clear_table(addingBar, number_of_added_process, processes);
+        FxmlHelper.clear_table(addingBar, number_of_added_process, processesIntable);
     }
 //////////////////////////////////////////////////////////////////////////
 
@@ -154,28 +154,11 @@ public class FXMLcontroller implements Initializable {
     @FXML
     public void COMPUTE()
     {
-        System.out.println("compute is pressed");
-        switch (SchedulerType.getValue().toString()){
-            case "FCFS":
+        AvgWaitingTimeTF.setText((schedule.calculate_avg_wait_time(data)) + "");
+        System.out.println(schedule.calculate_avg_wait_time(data));
+        AvgTurnaroundTimeTF.setText((schedule.calculate_avg_turn_around_time(data)) + "");
+        System.out.println(schedule.calculate_avg_turn_around_time(data));
 
-                break;
-            case "preemptive SJF":
-
-                break;
-            case"non-preemptive SJF":
-
-                break;
-            case "Round Robin":
-
-                break;
-            case "preemptive priority":
-
-                break;
-            case"non-preemptive priority":
-
-                break;
-
-        }
     }
 //////////////////////////////////////////////////////////////////////////
 
@@ -183,6 +166,25 @@ public class FXMLcontroller implements Initializable {
     @FXML
     public void GENERATE()
     {
+        chart_scroll_pane.setContent(chart);
+        System.out.println(data);
+        ArrayList<Process> data_clone = FxmlHelper.cloneList(data);
+        if(SchedulerType.getValue().toString().equals("Round Robin")) {
+            int quanta = Integer.parseInt(QuantumTimeTF.getText());
+//            System.out.println(quanta);
+//            System.out.println(data);
+            Queue<LiveTime> output;
+            output = ((RoundRobin)schedule).Schedule(data_clone, quanta);
+            System.out.println(output);
+            FxmlHelper.draw_chart_RR(output, chart);
+        }
+        else
+        {
+            Queue<Process> output = schedule.Schedule(data_clone);
+            FxmlHelper.draw_chart(output, chart);
+        }
+        Computebtn.setDisable(false);
+
 //        System.out.println("Generate is pressed");
 //        for (int i = 0; i < data.size(); i++) {
 //            System.out.println(data.get(i).getProcess_ID());
@@ -190,20 +192,23 @@ public class FXMLcontroller implements Initializable {
 //            System.out.println(data.get(i).getBurstTime());
 //            System.out.println(data.get(i).getPriority());
 //        }
-          chart_scroll_pane.setContent(chart);
+
 //        FxmlHelper.draw_process(chart, chart.getLayoutX()+ 25, 25,"p"+1,0);
-        ArrayList<Process> processes = new ArrayList<>();
-        processes.add(new Process(1,0,10));
-        processes.add(new Process(2,0,1));
-        processes.add(new Process(3,0,2));
-        processes.add(new Process(4,0,1));
-        processes.add(new Process(5,0,5));
 
+//        ArrayList<Process> processes = new ArrayList<>();
+//        processes.add(new Process(1,0,10));
+//        processes.add(new Process(2,0,1));
+//        processes.add(new Process(3,0,2));
+//        processes.add(new Process(4,0,1));
+//        processes.add(new Process(5,0,5));
+//        System.out.println(processes);
+//
+//        Queue<LiveTime> output;
+//        RoundRobin RR = new RoundRobin();
+//        output = (RR).Schedule(processes, 2);
+//        System.out.println(output);
+//        FxmlHelper.draw_chart_RR(output, chart);
 
-        Queue<LiveTime> output;
-        RoundRobin RR = new RoundRobin();
-        output=(RR).Schedule(processes,2);
-        FxmlHelper.draw_chart_RR(output,chart);
     }
 //////////////////////////////////////////////////////////////////////////
 
@@ -227,7 +232,7 @@ public class FXMLcontroller implements Initializable {
                 break;
             case "preemptive priority":
             case"non-preemptive priority":
-                FxmlHelper.clear_table(addingBar, number_of_added_process, processes);
+                FxmlHelper.clear_table(addingBar, number_of_added_process, processesIntable);
                 QuantumTime.setVisible(false);
                 PriorityTF.setVisible(true);
                 PriorityTFL.setVisible(true);
@@ -288,7 +293,7 @@ public class FXMLcontroller implements Initializable {
             }
 
             //Get all the items from the table as a list, then add the new process to the list
-            processes.getItems().add(newProcess);
+            processesIntable.getItems().add(newProcess);
             Process np = new Process(newProcess);
             data.add(np);
             number_of_added_process.setValue(number_of_added_process.getValue() + 1);
@@ -307,7 +312,7 @@ public class FXMLcontroller implements Initializable {
     @FXML
     public void RESET()
     {
-        FxmlHelper.clear_table(addingBar, number_of_added_process, processes);
+        FxmlHelper.clear_table(addingBar, number_of_added_process, processesIntable);
         QuantumTime.setVisible(false);
         PriorityTF.setVisible(false);
         PriorityTFL.setVisible(false);
@@ -316,6 +321,13 @@ public class FXMLcontroller implements Initializable {
         live_pane.setDisable(true);
         no_processes.setDisable(false);
         addingBar.setDisable(false);
+        Computebtn.setDisable(true);
+        SchedulerType.getSelectionModel().clearSelection();
+        SchedulerType.setValue("Scheduler Type");
+        AvgWaitingTimeTF.clear();
+        AvgTurnaroundTimeTF.clear();
+        live.getChildren().clear();
+        chart.getChildren().clear();
 //        data.get(0).setRemainingTime("6");
 //        processes.getItems().clear();
 //        processes.setDisable(true);
