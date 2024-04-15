@@ -183,6 +183,10 @@ public class FXMLcontroller implements Initializable {
             Queue<Process> output = schedule.Schedule(data_clone);
             FxmlHelper.draw_chart(output, chart);
         }
+        for (Process p : data)
+        {
+            p.getProcessIndex().setRemainingTime("0");
+        }
         Computebtn.setDisable(false);
 
 //        System.out.println("Generate is pressed");
@@ -343,8 +347,8 @@ public class FXMLcontroller implements Initializable {
         Timeline tl = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
             i++;
             x+=30;
-//             chosen_process(
-           FxmlHelper.draw_process(live,x , 30,"PP",0);
+           FxmlHelper.draw_process(live,x , 30,"PP",i);
+
         }));
         tl.setCycleCount(Animation.INDEFINITE);
         tl.play();
