@@ -96,12 +96,14 @@ public class FXMLcontroller implements Initializable {
 
     int Live_current_time = 0;
     int prev_process = -1;
-    Rectangle procrss_block;
     double x = live.getLayoutX();
     Queue<Process> output = new LinkedList<>();
 
+    Timeline tl;
+
+
     boolean running = false;
-    boolean adding = false;
+//    boolean adding = false;
 
     //    function called first on openning scene
     public void initialize(URL url, ResourceBundle rb) {
@@ -182,6 +184,30 @@ public class FXMLcontroller implements Initializable {
                 }
             }
         });
+        tl = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
+
+            x+=30;
+            Process p = output.peek();
+
+            if (p.getRemaining_burst_time() == 1) {
+                output.remove();
+//                not sure
+                data.remove(p);
+            }
+            p.setRemaining_burst_time(p.getRemaining_burst_time() - 1);
+//            sets remaining time value in table
+            p.getProcessIndex().setRemainingTime(p.getRemaining_burst_time()+"");
+//            drawing the process
+            if(prev_process == p.getProcess_ID())
+                FxmlHelper.draw_process_trial(live,x , 30,"P" + p.getProcess_ID());
+            else
+                FxmlHelper.draw_process(live,x , 30,"P" + p.getProcess_ID(),Live_current_time);
+            prev_process = p.getProcess_ID();
+            Live_current_time++;
+            FxmlHelper.printQueue(output, Live_current_time);
+        }));
+
+//        live.setMinHeight(live_scroll_pane.getMinHeight());
 
     }
 
@@ -341,9 +367,27 @@ public class FXMLcontroller implements Initializable {
         PriorityTFL.clear();
         ProcessIDTFL.clear();
         live.getChildren().clear();
+        System.out.println("sssss" + live_scroll_pane.heightProperty());
+        live.setMinHeight(150);
         chart.getChildren().clear();
         output.clear();
         Live_current_time = 0;
+        prev_process = -1;
+
+        x = live.getLayoutX();
+        System.out.println(live.heightProperty());
+        if(running)
+        {
+            running = false;
+            stop();
+        }
+        if (LiveMode.isSelected())
+        {
+            live_pane.setDisable(false);
+            no_processes.setDisable(true);
+            addingBar.setDisable(true);
+            no_processes.clear();
+        }
 //        data.get(0).setRemainingTime("6");
 //        processes.getItems().clear();
 //        processes.setDisable(true);
@@ -354,42 +398,53 @@ public class FXMLcontroller implements Initializable {
     @FXML
     public void RUN()
     {
-        System.out.println("Run is pressed");
-        running = true;
-//        priority non preemptive live scheduling trial
         live_scroll_pane.setContent(live);
-        schedule = FxmlHelper.initializeScheduler(SchedulerType.getValue().toString());
-        System.out.println(SchedulerType.getValue().toString());
-        if(SchedulerType.getValue().toString().equals("non-preemptive priority")) {
-            output = ((priorityNonPreemptiveScheduler)schedule).Schedule(data,0);
-            ((priorityNonPreemptiveScheduler)schedule).setProcessStartTimeAndEndTime(data,0);
-            System.out.println(output);
-        }
-        FxmlHelper.printQueue(output,Live_current_time);
+        if(!running) {
 
+            System.out.println("Run is pressed");
+            running = true;
+//        priority non preemptive live scheduling trial
 
-
-        Timeline tl = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
-
-            x+=30;
-            Process p = output.peek();
-
-            if (p.getRemaining_burst_time() == 1) {
-                output.remove();
+            schedule = FxmlHelper.initializeScheduler(SchedulerType.getValue().toString());
+            System.out.println(SchedulerType.getValue().toString());
+            if (SchedulerType.getValue().toString().equals("non-preemptive priority")) {
+                output = ((priorityNonPreemptiveScheduler) schedule).Schedule(data, 0);
+                ((priorityNonPreemptiveScheduler) schedule).setProcessStartTimeAndEndTime(data, 0);
+                System.out.println(output);
             }
-            p.setRemaining_burst_time(p.getRemaining_burst_time() - 1);
-//            sets remaining time value in table
-            p.getProcessIndex().setRemainingTime(p.getRemaining_burst_time()+"");
 
-            if(prev_process == p.getProcess_ID())
-                FxmlHelper.draw_process_trial(live,x , 30,"P" + p.getProcess_ID());
-            else
-                FxmlHelper.draw_process(live,x , 30,"P" + p.getProcess_ID(),Live_current_time);
-            prev_process = p.getProcess_ID();
-            Live_current_time++;
-        }));
+        }
+
+//        copied to initialize method
+
+
+//        Timeline tl = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
+//
+//            x+=30;
+//            Process p = output.peek();
+//
+//            if (p.getRemaining_burst_time() == 1) {
+//                output.remove();
+//            }
+//            p.setRemaining_burst_time(p.getRemaining_burst_time() - 1);
+////            sets remaining time value in table
+//            p.getProcessIndex().setRemainingTime(p.getRemaining_burst_time()+"");
+//
+//            if(prev_process == p.getProcess_ID())
+//                FxmlHelper.draw_process_trial(live,x , 30,"P" + p.getProcess_ID());
+//            else
+//                FxmlHelper.draw_process(live,x , 30,"P" + p.getProcess_ID(),Live_current_time);
+//            prev_process = p.getProcess_ID();
+//            Live_current_time++;
+//        }));
         tl.setCycleCount(Animation.INDEFINITE);
         tl.play();
+    }
+
+    @FXML
+    public void stop()
+    {
+        tl.stop();
     }
     @FXML
     public void ADD_LIVE()

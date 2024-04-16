@@ -180,7 +180,7 @@
                                                 <HBox prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
                                                     <children>
                                                         <Button fx:id="Runbtn" mnemonicParsing="false" onAction="#RUN" style="-fx-background-color: #3d4b25;" text="Run" textFill="#d7d7d7" />
-                                                        <Button mnemonicParsing="false" style="-fx-background-color: #661a1a;" text="Stop" textFill="#ece0e0" />
+                                                        <Button mnemonicParsing="false" onAction="#stop" style="-fx-background-color: #661a1a;" text="Stop" textFill="#ece0e0" />
                                                     </children>
                                                 </HBox>
                                             </children>
