@@ -11,14 +11,42 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Queue;
 
 public class FxmlHelper {
-    public static void clear_table(GridPane addingBar, SimpleIntegerProperty number_of_added_process, TableView processes){
+    public static void clear_table(GridPane addingBar, SimpleIntegerProperty number_of_added_process, TableView processes, ArrayList<Process>data){
         addingBar.setDisable(false);
         number_of_added_process.set(0);
         processes.getItems().clear();
+        data.clear();
     }
+    public static void printQueue(Queue<Process> queue , int currentTime) {
+
+        Queue<Process> clonedList = new LinkedList<>() ;
+        for (Process p : queue) {
+            clonedList.add(p);
+
+        int queueSize = queue.size(); // Get the queue size
+        int currentIndex = 0;
+
+        while (currentIndex < queueSize) {
+            Process process = clonedList.poll(); // Remove and return the head element
+            if (process != null) {
+//                if (currentIndex ==0 ){
+//                   process.setRemaining_burst_time(process.getEnd_time()-currentTime);
+//                }
+                System.out.println("Process:");
+                System.out.println("  - Process ID: " + process.getProcessID());
+                System.out.println("  - Remaining Burst Time: " + process.getRemaining_burst_time());
+                System.out.println("  - Priority: " + process.getPriority());
+                System.out.println("Start time " +process.getStart_time()+" End time "+process.getEnd_time());
+            }
+            currentIndex++;
+        }
+    }
+    }
+
     public static ArrayList<Process> cloneList(ArrayList<Process> List) {
         ArrayList<Process> clonedList = new ArrayList<Process>(List.size());
         for (Process p : List) {
@@ -43,7 +71,6 @@ public class FxmlHelper {
 
                 break;
             case"non-preemptive priority":
-
                 return new priorityNonPreemptiveScheduler();
 
         }
@@ -84,6 +111,45 @@ public class FxmlHelper {
         pane.getChildren().add(process_label);
         pane.getChildren().add(l);
     }
+
+    public static Rectangle draw_process_trial (Pane pane, double x, double width, String id) {
+        Rectangle process_block = new Rectangle();
+        process_block.yProperty().bind(pane.heightProperty().divide(2));
+        process_block.setX(x);
+        process_block.setWidth(width);
+        process_block.heightProperty().bind(pane.heightProperty().divide(3));
+        process_block.setFill(new Color(.03, .43, .12, .22));
+
+
+        Text process_label;
+        process_label = new Text();
+        process_label.setText(id);
+        process_label.xProperty().bind(process_block.xProperty().add(process_block.widthProperty().divide(3)));
+        process_label.yProperty().bind(process_block.yProperty().add(process_block.heightProperty().divide(2)));
+        process_label.setStyle("-fx-font-size:15px;-fx-fill:red;");
+        pane.getChildren().add(process_block);
+        pane.getChildren().add(process_label);
+        return process_block;
+    }
+    public static void draw_line(Pane pane, Rectangle process_block, int time){
+        Line l= new Line();
+        double x = process_block.getX();
+        l.setEndX(x);l.setStartX(x);
+        l.startYProperty().bind(process_block.yProperty());
+        l.endYProperty().bind(process_block.yProperty().add(process_block.heightProperty()));
+        l.setStroke(Color.BLACK);
+        l.setStrokeWidth(1);
+
+        Text label;
+        label = new Text();
+        label.setText(""+ time);
+        label.xProperty().bind(l.startXProperty().subtract(5));
+        label.yProperty().bind(l.endYProperty().add(15));
+        label.setStyle("-fx-font-size:15px;-fx-fill:black;");
+        pane.getChildren().add(l);
+        pane.getChildren().add(label);
+    }
+
     public static void draw_chart(Queue<Process> processes,Pane pane){
         double x = pane.getLayoutX()+25;
         int end_of_process = 0;
@@ -169,4 +235,5 @@ public class FxmlHelper {
         pane.getChildren().add(label);
         pane.getChildren().add(l);
     }
+
 }

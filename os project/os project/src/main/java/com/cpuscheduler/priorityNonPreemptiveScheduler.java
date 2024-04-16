@@ -6,7 +6,7 @@ public class priorityNonPreemptiveScheduler implements Schedular  {
 
 
     @Override
-    public  Queue<Process> Schedule(ArrayList<Process> processes  ) {return null;}
+    public  Queue<Process> Schedule(ArrayList<Process> processes) {return null;}
 
     public  Queue<Process> Schedule(ArrayList<Process> processes ,int currentTime ) {
 
@@ -87,9 +87,10 @@ if (arrivedProcesses.isEmpty()) {
         return queue;
     }
 
+//    public double calculate_avg_wait_time(ArrayList<Process> processes){return 0;}
     @Override
-    public double calculate_avg_wait_time(ArrayList<Process> processes){return 0;}
-    public double calculate_avg_wait_time_F(ArrayList<Process> processes, int currentTime) {
+    public double calculate_avg_wait_time(ArrayList<Process> processes) {
+        int currentTime = 0;
         setProcessStartTimeAndEndTime(processes , currentTime);
         double counter = 0.0;
         for(Process process : processes){
@@ -99,10 +100,11 @@ if (arrivedProcesses.isEmpty()) {
     }
 
     @Override
-    public double calculate_avg_turn_around_time(ArrayList<Process> processes){return 0;}
+//    public double calculate_avg_turn_around_time(ArrayList<Process> processes){return 0;}
 
 
-    public double calculate_avg_turn_around_time_F(ArrayList<Process> processes, int currentTime) {
+    public double calculate_avg_turn_around_time(ArrayList<Process> processes) {
+        int currentTime = 0;
         setProcessStartTimeAndEndTime(processes , currentTime);
         double counter = 0.0;
         for(Process process : processes){

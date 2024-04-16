@@ -43,16 +43,29 @@
                                                         <Font name="Berlin Sans FB" size="14.0" />
                                                     </font>
                                                 </RadioButton>
-                                                <Label text="number of processes">
-                                                    <font>
-                                                        <Font name="Berlin Sans FB" size="14.0" />
-                                                    </font>
-                                                </Label>
-                                                <TextField fx:id="no_processes" maxHeight="-Infinity" maxWidth="-Infinity" onAction="#setNumber" prefWidth="150.0">
-                                                    <VBox.margin>
-                                                        <Insets left="10.0" right="10.0" />
-                                                    </VBox.margin></TextField>
-                                                <ComboBox fx:id="SchedulerType" onAction="#SchedulerChooser" prefWidth="150.0" promptText="Scheduler Type">
+                                    <GridPane alignment="CENTER">
+                                      <columnConstraints>
+                                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="126.19998016357422" minWidth="78.19998779296876" prefWidth="126.19998016357422" />
+                                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="86.20001220703124" minWidth="10.0" prefWidth="38.20001983642577" />
+                                      </columnConstraints>
+                                      <rowConstraints>
+                                        <RowConstraints />
+                                      </rowConstraints>
+                                       <children>
+                                                      <Label alignment="CENTER" text="number of processes" GridPane.halignment="CENTER">
+                                                          <font>
+                                                              <Font name="Berlin Sans FB" size="13.0" />
+                                                          </font>
+                                                      </Label>
+                                                      <TextField fx:id="no_processes" maxHeight="-Infinity" maxWidth="-Infinity" onAction="#setNumber" prefHeight="26.0" prefWidth="30.0" GridPane.columnIndex="1" />
+                                       </children>
+                                    </GridPane>
+                                    <Label prefHeight="6.0" prefWidth="80.0" text="Scheduler Type">
+                                       <font>
+                                          <Font name="Berlin Sans FB" size="12.0" />
+                                       </font>
+                                    </Label>
+                                                <ComboBox fx:id="SchedulerType" prefWidth="150.0">
                                                     <items>
                                                         <FXCollections fx:factory="observableArrayList">
                                                             <String fx:value="FCFS" />
@@ -66,7 +79,10 @@
                                                 </ComboBox>
                                                 <HBox fx:id="QuantumTime" alignment="CENTER" prefHeight="29.0" prefWidth="164.0" spacing="10.0">
                                                     <children>
-                                                        <Label text="Quantum Time" />
+                                                        <Label text="Quantum Time">
+                                             <font>
+                                                <Font name="Berlin Sans FB" size="12.0" />
+                                             </font></Label>
                                                         <TextField fx:id="QuantumTimeTF" prefHeight="26.0" prefWidth="42.0" />
                                                     </children>
                                                 </HBox>
@@ -139,7 +155,6 @@
                                                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                                 <RowConstraints maxHeight="-Infinity" minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                             </rowConstraints>
                                             <children>
@@ -148,27 +163,21 @@
                                                         <Font name="Berlin Sans FB Bold" size="14.0" />
                                                     </font>
                                                 </Label>
-                                                <Label text="Burst Time" GridPane.rowIndex="2">
+                                                <Label text="Burst Time" GridPane.rowIndex="1">
                                                     <font>
                                                         <Font name="Berlin Sans FB Bold" size="14.0" />
                                                     </font>
                                                 </Label>
-                                                <Label text="Arrival Time" GridPane.rowIndex="1">
-                                                    <font>
-                                                        <Font name="Berlin Sans FB Bold" size="14.0" />
-                                                    </font>
-                                                </Label>
-                                                <Label fx:id="priorityL" text="Priority" GridPane.rowIndex="3">
+                                                <Label fx:id="priorityL" text="Priority" GridPane.rowIndex="2">
                                                     <font>
                                                         <Font name="Berlin Sans FB Bold" size="14.0" />
                                                     </font>
                                                 </Label>
                                                 <TextField fx:id="ProcessIDTFL" GridPane.columnIndex="1" />
-                                                <TextField fx:id="ArrivalTimeTFL" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                                <TextField fx:id="BurstTimeTFL" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                                                <TextField fx:id="PriorityTFL" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                                                <Button fx:id="Addbtn" mnemonicParsing="false" onAction="#ADD" style="-fx-background-color: black;" text="Add" textFill="#faeded" GridPane.rowIndex="4" />
-                                                <HBox prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
+                                                <TextField fx:id="BurstTimeTFL" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                                <TextField fx:id="PriorityTFL" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                                <Button fx:id="Addbtn" mnemonicParsing="false" onAction="#ADD_LIVE" style="-fx-background-color: black;" text="Add" textFill="#faeded" GridPane.rowIndex="3" />
+                                                <HBox prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
                                                     <children>
                                                         <Button fx:id="Runbtn" mnemonicParsing="false" onAction="#RUN" style="-fx-background-color: #3d4b25;" text="Run" textFill="#d7d7d7" />
                                                         <Button mnemonicParsing="false" style="-fx-background-color: #661a1a;" text="Stop" textFill="#ece0e0" />

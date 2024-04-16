@@ -7,6 +7,7 @@ import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.Queue;
 
 public class scheduler_app extends Application {
     @Override
@@ -71,26 +72,26 @@ public class scheduler_app extends Application {
 //
 //
 //
-//     public static void printQueue(Queue<Process> queue , int currentTime) {
-//
-//
-//        int queueSize = queue.size(); // Get the queue size
-//        int currentIndex = 0;
-//
-//        while (currentIndex < queueSize) {
-//            Process process = queue.poll(); // Remove and return the head element
-//            if (process != null) {
-////                if (currentIndex ==0 ){
-////                   process.setRemaining_burst_time(process.getEnd_time()-currentTime);
-////                }
-//                System.out.println("Process:");
-//                System.out.println("  - Process ID: " + process.getProcessID());
-//                System.out.println("  - Remaining Burst Time: " + process.getRemaining_burst_time());
-//                System.out.println("  - Priority: " + process.getPriority());
-//                System.out.println("Start time " +process.getStart_time()+" End time "+process.getEnd_time());
-//            }
-//            currentIndex++;
-//        }
-//   }
+     public static void printQueue(Queue<Process> queue , int currentTime) {
+
+
+        int queueSize = queue.size(); // Get the queue size
+        int currentIndex = 0;
+
+        while (currentIndex < queueSize) {
+            Process process = queue.poll(); // Remove and return the head element
+            if (process != null) {
+//                if (currentIndex ==0 ){
+//                   process.setRemaining_burst_time(process.getEnd_time()-currentTime);
+//                }
+                System.out.println("Process:");
+                System.out.println("  - Process ID: " + process.getProcessID());
+                System.out.println("  - Remaining Burst Time: " + process.getRemaining_burst_time());
+                System.out.println("  - Priority: " + process.getPriority());
+                System.out.println("Start time " +process.getStart_time()+" End time "+process.getEnd_time());
+            }
+            currentIndex++;
+        }
+   }
 //    }
 }

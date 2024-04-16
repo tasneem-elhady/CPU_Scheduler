@@ -75,14 +75,14 @@ public class processInTable {
         ArrivalTime = new SimpleStringProperty(arrivalTime);
         BurstTime = new SimpleStringProperty(burstTime);
         Priority = new SimpleStringProperty(priority);
-        RemainingTime = new SimpleStringProperty();
+        RemainingTime = new SimpleStringProperty(BurstTime.getValue());
     }
     public processInTable(String process_ID, String arrivalTime, String burstTime) {
         this.processID = new SimpleStringProperty(process_ID);
         ArrivalTime = new SimpleStringProperty(arrivalTime);
         BurstTime = new SimpleStringProperty(burstTime);
         Priority = new SimpleStringProperty();
-        RemainingTime = new SimpleStringProperty();
+        RemainingTime = new SimpleStringProperty(BurstTime.getValue());
     }
 }
 
