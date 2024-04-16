@@ -34,6 +34,7 @@ public class Process implements Comparable<Process> {
     public void setRemaining_burst_time(int remaining_burst_time) {
         this.remaining_burst_time = remaining_burst_time;
     }
+     public Process(){}
 
     public Process(int process_ID, int arrivalTime, int burstTime, int priority) {
         this.processID = process_ID;
