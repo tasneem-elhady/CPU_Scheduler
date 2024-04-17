@@ -63,8 +63,8 @@ public class FxmlHelper {
 
                 return new SJF_Prem();
             case"non-preemptive SJF":
+                return new SJF_Non_Prem();
 
-                break;
             case "Round Robin":
                 return new RoundRobin();
             case "preemptive priority":

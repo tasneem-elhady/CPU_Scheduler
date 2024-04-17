@@ -294,6 +294,11 @@ public class FXMLcontroller implements Initializable {
             System.out.println(output);
             FxmlHelper.draw_chart_RR(outputLiveTime, chart);
         }
+        else if(SchedulerType.getValue().toString().equals("non-preemptive SJF")) {
+            output = ((SJF_Non_Prem) schedule).Schedule(data_clone);
+            System.out.println(output);
+            FxmlHelper.draw_chart(output, chart);
+        }
         else
         {
             Queue<Process> output = schedule.Schedule(data_clone);

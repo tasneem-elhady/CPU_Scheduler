@@ -1,11 +1,9 @@
 package com.cpuscheduler;
-
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
-
 import java.io.IOException;
 import java.util.Queue;
 public class scheduler_app extends Application {

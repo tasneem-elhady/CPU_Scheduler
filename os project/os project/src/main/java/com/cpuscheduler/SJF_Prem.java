@@ -96,7 +96,7 @@ public class SJF_Prem implements Schedular{
 
 
     public static void main(String[] args) {
-        Process p1=new Process(1,0,1);
+        Process p1=new Process(1,0,6);
         Process p2=new Process(2,3,3);
         Process p3=new Process(3,5,1);
         ArrayList<Process>p=new ArrayList<>();
