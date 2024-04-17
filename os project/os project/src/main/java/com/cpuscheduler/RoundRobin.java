@@ -173,11 +173,30 @@ public class RoundRobin implements Schedular{
         return (sum/ getNo_of_processes());
     }
 
+    public  int choosenProcess(Queue<LiveTime> result,int t){
+
+        ArrayList<ByTime> t_by_t =new ArrayList<>();
+        int time=0;
+        for (LiveTime p: result
+        ) {
+            for (int i=0;i<p.getCompletedTime();i++){
+                t_by_t.add(new ByTime(time,p.getP().getProcess_ID()));
+                time++;
+            }
+        }
+        for (ByTime b:t_by_t
+        ) {
+            if(b.getTime()==t) return b.getP_id();
+        }
+//            return t_by_t;
+        return -1;
+    }
+
     public static void main(String[] args) {
         ArrayList<Process> processes = new ArrayList<>();
-        processes.add(new Process(1,3,10));
-        processes.add(new Process(2,8,1));
-        processes.add(new Process(3,2,2));
+        processes.add(new Process(1,2,5));
+        processes.add(new Process(2,0,3));
+        processes.add(new Process(3,1,1));
 //        processes.add(new Process(4,0,1));
 //        processes.add(new Process(5,0,5));
 
@@ -211,4 +230,27 @@ public class RoundRobin implements Schedular{
 
 
 
+}
+
+class ByTime{
+    private int time;
+    private int p_id;
+
+    public ByTime(int time, int p_id) {
+        this.time = time;
+        this.p_id = p_id;
+    }
+
+    public int getTime() {
+        return time;
+    }
+
+    public int getP_id() {
+        return p_id;
+    }
+
+    @Override
+    public String toString() {
+        return "At time = "+time+", There is process no. = "+p_id;
+    }
 }
