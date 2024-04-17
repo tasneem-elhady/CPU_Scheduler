@@ -98,6 +98,7 @@ public class FXMLcontroller implements Initializable {
     int prev_process = -1;
     double x = live.getLayoutX();
     Queue<Process> output = new LinkedList<>();
+    Queue<LiveTime> outputLiveTime = new LinkedList<>();
 
     Timeline tl;
 
@@ -140,14 +141,14 @@ public class FXMLcontroller implements Initializable {
 
         number_of_added_process.addListener((obs, oldText, newText) -> {
             if (!LiveMode.isSelected() && newText.equals(Integer.parseInt(no_processes.getText()))) {
-                    ProcessIDTF.clear();
-                    ArrivalTimeTF.clear();
-                    BurstTimeTF.clear();
-                    PriorityTF.clear();
-                    addingBar.setDisable(true);
-                    chart_pane .setDisable(false);
-                    schedule = FxmlHelper.initializeScheduler(SchedulerType.getValue().toString());
-                }
+                ProcessIDTF.clear();
+                ArrivalTimeTF.clear();
+                BurstTimeTF.clear();
+                PriorityTF.clear();
+                addingBar.setDisable(true);
+                chart_pane .setDisable(false);
+                schedule = FxmlHelper.initializeScheduler(SchedulerType.getValue().toString());
+            }
         });
 
         SchedulerType.valueProperty().addListener((obs, oldText, newText) -> {
@@ -187,24 +188,54 @@ public class FXMLcontroller implements Initializable {
         tl = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
 
             x+=30;
-            Process p = output.peek();
+            if(SchedulerType.getValue().toString().equals("non-preemptive priority")&& !output.isEmpty())
+            {
+                Process p = output.peek();
 
-            if (p.getRemaining_burst_time() == 1) {
-                output.remove();
+                if (p.getRemaining_burst_time() == 1) {
+                    output.remove();
 //                not sure
-                data.remove(p);
-            }
-            p.setRemaining_burst_time(p.getRemaining_burst_time() - 1);
+                    data.remove(p);
+                }
+                p.setRemaining_burst_time(p.getRemaining_burst_time() - 1);
 //            sets remaining time value in table
-            p.getProcessIndex().setRemainingTime(p.getRemaining_burst_time()+"");
+                p.getProcessIndex().setRemainingTime(p.getRemaining_burst_time() + "");
 //            drawing the process
-            if(prev_process == p.getProcess_ID())
-                FxmlHelper.draw_process_trial(live,x , 30,"P" + p.getProcess_ID());
-            else
-                FxmlHelper.draw_process(live,x , 30,"P" + p.getProcess_ID(),Live_current_time);
-            prev_process = p.getProcess_ID();
-            Live_current_time++;
-            FxmlHelper.printQueue(output, Live_current_time);
+                if (prev_process == p.getProcess_ID())
+                    FxmlHelper.draw_process_trial(live, x, 30, "P" + p.getProcess_ID());
+                else
+                    FxmlHelper.draw_process(live, x, 30, "P" + p.getProcess_ID(), Live_current_time);
+                prev_process = p.getProcess_ID();
+                Live_current_time++;
+                System.out.println("at run ////////////////////////////////////////////////////////////////////////////////////////");
+                System.out.println("current time  "+Live_current_time);
+                FxmlHelper.printQueue(output, Live_current_time);
+                System.out.println("//////////////////////////////////////////////////////////////////////////////");
+            } else if(SchedulerType.getValue().toString().equals("Round Robin")) {
+                LiveTime pL = outputLiveTime.peek();
+                Process p = pL.getP();
+
+                if (p.getRemaining_burst_time() == 1) {
+//                not sure
+                    data.remove(p);
+                }
+                if (pL.getCompletedTime() == 1)
+                    outputLiveTime.remove();
+
+                pL.setCompletedTime(pL.getCompletedTime() - 1);
+                p.setRemaining_burst_time(p.getRemaining_burst_time() - 1);
+//            sets remaining time value in table
+                p.getProcessIndex().setRemainingTime(p.getRemaining_burst_time() + "");
+//            drawing the process
+                if (prev_process == p.getProcess_ID())
+                    FxmlHelper.draw_process_trial(live, x, 30, "P" + p.getProcess_ID());
+                else
+                    FxmlHelper.draw_process(live, x, 30, "P" + p.getProcess_ID(), Live_current_time);
+                prev_process = p.getProcess_ID();
+                Live_current_time++;
+                FxmlHelper.printQueue(output, Live_current_time);
+
+            }
         }));
 
 //        live.setMinHeight(live_scroll_pane.getMinHeight());
@@ -295,7 +326,7 @@ public class FXMLcontroller implements Initializable {
 
     }
 //////////////////////////////////////////////////////////////////////////
-
+//
 //    //    on action of generate chart button
 //    @FXML
 //    public void SchedulerChooser()
@@ -313,38 +344,38 @@ public class FXMLcontroller implements Initializable {
             A.show();
         }
         else
-        try {
-            processInTable newProcess;
-            switch (SchedulerType.getValue().toString()) {
+            try {
+                processInTable newProcess;
+                switch (SchedulerType.getValue().toString()) {
 
-                case "preemptive priority":
-                case "non-preemptive priority":
+                    case "preemptive priority":
+                    case "non-preemptive priority":
 
-                    newProcess = new processInTable(ProcessIDTF.getText(),
-                            ArrivalTimeTF.getText(),
-                            BurstTimeTF.getText(),
-                            PriorityTF.getText());
+                        newProcess = new processInTable(ProcessIDTF.getText(),
+                                ArrivalTimeTF.getText(),
+                                BurstTimeTF.getText(),
+                                PriorityTF.getText());
 
-                    break;
-                default:
-                    newProcess = new processInTable(ProcessIDTF.getText(),
-                            ArrivalTimeTF.getText(),
-                            BurstTimeTF.getText());
+                        break;
+                    default:
+                        newProcess = new processInTable(ProcessIDTF.getText(),
+                                ArrivalTimeTF.getText(),
+                                BurstTimeTF.getText());
+                }
+
+                //Get all the items from the table as a list, then add the new process to the list
+                processesIntable.getItems().add(newProcess);
+                Process np = new Process(newProcess);
+                data.add(np);
+                number_of_added_process.setValue(number_of_added_process.getValue() + 1);
+                System.out.println(number_of_added_process);
+                System.out.println(data);
+            }catch (Exception e)
+            {
+                System.out.println(e);
+                A.setContentText("Please choose scheduler type ");
+                A.show();
             }
-
-            //Get all the items from the table as a list, then add the new process to the list
-            processesIntable.getItems().add(newProcess);
-            Process np = new Process(newProcess);
-            data.add(np);
-            number_of_added_process.setValue(number_of_added_process.getValue() + 1);
-            System.out.println(number_of_added_process);
-            System.out.println(data);
-        }catch (Exception e)
-        {
-            System.out.println(e);
-            A.setContentText("Please choose scheduler type ");
-            A.show();
-        }
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -418,6 +449,18 @@ public class FXMLcontroller implements Initializable {
                 System.out.println(output);
             }
 
+            else if(SchedulerType.getValue().toString().equals("Round Robin")) {
+                System.out.println(SchedulerType.getValue().toString());
+                int quanta = Integer.parseInt(QuantumTimeTF.getText());
+//            System.out.println(quanta);
+//            System.out.println(data);
+//                Queue<LiveTime> output;
+                outputLiveTime = ((RoundRobin)schedule).Schedule(data, quanta);
+                System.out.println(output);
+            }
+
+
+
         }
 
 //        copied to initialize method
@@ -454,12 +497,6 @@ public class FXMLcontroller implements Initializable {
     @FXML
     public void ADD_LIVE()
     {
-//        if(running)
-//        {
-//            output = ((priorityNonPreemptiveScheduler)schedule).Schedule(data,Live_current_time);
-//            ((priorityNonPreemptiveScheduler)schedule).setProcessStartTimeAndEndTime(data,Live_current_time);
-//            FxmlHelper.printQueue(output,0);
-//        }
         Alert A = new Alert(Alert.AlertType.WARNING);
         try {
             processInTable newProcess;
@@ -483,9 +520,19 @@ public class FXMLcontroller implements Initializable {
             processesIntable.getItems().add(newProcess);
             Process np = new Process(newProcess);
             data.add(np);
-            number_of_added_process.setValue(number_of_added_process.getValue() + 1);
-            System.out.println(number_of_added_process);
+//            number_of_added_process.setValue(number_of_added_process.getValue() + 1);
+//            System.out.println(number_of_added_process);
             System.out.println(data);
+            if(running)
+            {
+                output = ((priorityNonPreemptiveScheduler)schedule).Schedule(data,Live_current_time);
+                ((priorityNonPreemptiveScheduler)schedule).setProcessStartTimeAndEndTime(data,Live_current_time);
+                System.out.println("at Live//////////////////////////////////////////////////////////////////////////");
+
+                FxmlHelper.printQueue(output,0);
+                System.out.println("///////////////////////////////////////////////////////////////////////////////");
+
+            }
         }catch (Exception e)
         {
             System.out.println(e);

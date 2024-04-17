@@ -34,13 +34,15 @@ public class Process implements Comparable<Process> {
     public void setRemaining_burst_time(int remaining_burst_time) {
         this.remaining_burst_time = remaining_burst_time;
     }
-     public Process(){}
+    public Process(){}
 
     public Process(int process_ID, int arrivalTime, int burstTime, int priority) {
         this.processID = process_ID;
         ArrivalTime = arrivalTime;
         BurstTime = burstTime;
         Priority = priority;
+        this.remaining_burst_time = burstTime;
+
     }
     public Process(int process_ID, int arrivalTime, int burstTime) {
         this.processID = process_ID;
@@ -134,14 +136,14 @@ public class Process implements Comparable<Process> {
         return (getStart_time()-getArrivalTime());
     }
 
-     public void printProcess(){
+    public void printProcess(){
         System.out.println(getProcess_ID()+" : arrival= "+getArrivalTime()+" , burst= "+ getBurstTime()
                 +" , Start time= "+getStart_time()+" , End time= "+getEnd_time());
         System.out.println("waiting time = "+waitingTime()+" , turnaround time= "+ turnAroundTime());
     }
     public String toString(){
         return (getProcess_ID()+" : arrival= "+getArrivalTime()+" , burst= "+ getBurstTime() + ", priority = " + getPriority()
-                +" , Start time= "+getStart_time()+" , End time= "+getEnd_time());
+                +" , Start time= "+getStart_time()+" , End time= "+getEnd_time() + "remaining burst time " + getRemaining_burst_time());
     }
 
     @Override
