@@ -108,6 +108,11 @@ public class PreemptivePriorityScheduling implements Schedular{
 
         // Calculating the total burst time of the processes
         for (int i = 0; i < n; i++) {
+            if(array[i].getBurstTime() == 0)
+            {
+                array[i].setBurstTime(array[i].getRemaining_burst_time());
+            }
+
             totalBurstTime += array[i].getBurstTime();
             array[i].settempBurstTime(array[i].getBurstTime());
             // System.out.println("id:"+array[i].getProcess_ID()+"bt"+array[i].tempBurstTime);
@@ -140,7 +145,7 @@ public class PreemptivePriorityScheduling implements Schedular{
         int n=processes.size();
         int totalWaitingTime = 0;
         for (int i = 0; i < n; i++) {
-            totalWaitingTime += (array[i].getEnd_time() - array[i].getStart_time() - array[i].gettempBurstTime());}
+            totalWaitingTime += (array[i].getEnd_time() - array[i].getStart_time() - array[i].getRemaining_burst_time());}
         return((double) totalWaitingTime / n);
     }
     @Override
@@ -155,6 +160,10 @@ public class PreemptivePriorityScheduling implements Schedular{
         return ((double)totalTurnaroundTime/n);
     }
     public Queue<Process> Schedule(ArrayList<Process> processList) {
+        while (!scheduledQueueP.isEmpty())
+            scheduledQueueP.remove();
+        while (!scheduledQueueRBT.isEmpty())
+            scheduledQueueRBT.remove();
         Process[] b = processList.toArray(new Process[0]);
         priority(b,processList.size());
         System.out.println("Average waiting time = "+calculate_avg_wait_time(processList));
