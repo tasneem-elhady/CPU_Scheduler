@@ -8,7 +8,6 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.Queue;
-// just a comment
 public class scheduler_app extends Application {
     @Override
     public void start(Stage stage) throws IOException {
