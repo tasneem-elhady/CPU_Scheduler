@@ -12,14 +12,38 @@ public class Process implements Comparable<Process> {
     private int completed_time;
     private boolean first_response=true;
 
+
+//    sarah's trial
+    private int tempBurstTime;
+    private int responseTime;
+
+
+    public int gettempBurstTime() {
+        return tempBurstTime;
+    }
+    public void settempBurstTime(int tempBurstTime) {
+        tempBurstTime = tempBurstTime;
+    }
+    public int getresponseTime() {
+        return responseTime;
+    }
+    public void setresponseTime(int responseTime) {
+        responseTime = responseTime;
+    }
+
     public Process(processInTable processIndex) {
         this.processIndex = processIndex;
         this.processID = Integer.parseInt(processIndex.getProcessID());
         this.ArrivalTime = Integer.parseInt(processIndex.getArrivalTime());
         this.BurstTime = Integer.parseInt(processIndex.getBurstTime());
         this.remaining_burst_time = Integer.parseInt(processIndex.getBurstTime());
+
         try {
             Priority = Integer.parseInt(processIndex.getPriority());
+            this.tempBurstTime =Integer.parseInt(processIndex.getBurstTime());
+            this.responseTime = -1;
+            this.end_time = 0;
+            this.Start_time = -1;
         }catch (Exception e)
         {
             Priority = 0;
@@ -42,7 +66,10 @@ public class Process implements Comparable<Process> {
         BurstTime = burstTime;
         Priority = priority;
         this.remaining_burst_time = burstTime;
-
+        this.tempBurstTime =burstTime;
+        this.responseTime = -1;
+        this.end_time = 0;
+        this.Start_time = -1;
     }
     public Process(int process_ID, int arrivalTime, int burstTime) {
         this.processID = process_ID;
@@ -143,7 +170,7 @@ public class Process implements Comparable<Process> {
     }
     public String toString(){
         return (getProcess_ID()+" : arrival= "+getArrivalTime()+" , burst= "+ getBurstTime() + ", priority = " + getPriority()
-                +" , Start time= "+getStart_time()+" , End time= "+getEnd_time() + "remaining burst time " + getRemaining_burst_time());
+                +" , Start time= "+getStart_time()+" , End time= "+getEnd_time() + ", remaining burst time " + getRemaining_burst_time()+"\n");
     }
 
     @Override

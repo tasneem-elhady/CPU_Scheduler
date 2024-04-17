@@ -15,6 +15,13 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 public class FxmlHelper {
+    public static Process get_process_at_index(Queue<Process> output, int index)
+    {
+        int i;
+        for ( i = 0; i < index; i++)
+            output.remove();
+        return  output.remove();
+    }
     public static void clear_table(GridPane addingBar, SimpleIntegerProperty number_of_added_process, TableView processes, ArrayList<Process>data){
         addingBar.setDisable(false);
         number_of_added_process.set(0);
@@ -68,8 +75,7 @@ public class FxmlHelper {
             case "Round Robin":
                 return new RoundRobin();
             case "preemptive priority":
-
-                break;
+                return new PreemptivePriorityScheduling();
             case"non-preemptive priority":
                 return new priorityNonPreemptiveScheduler();
 
@@ -235,5 +241,21 @@ public class FxmlHelper {
         pane.getChildren().add(label);
         pane.getChildren().add(l);
     }
-
+    public  static void draw_chart_PP(Queue<Process> output, Pane chart){
+        double x = chart.getLayoutX() + 30;
+        int prev_process_s = -1 ;
+        int size = output.size();
+        for (int i = 0; i < size; i++)
+        {
+            Process p = output.remove();
+//                System.out.println(p);
+//                System.out.println(output);
+            if (prev_process_s == p.getProcess_ID())
+                FxmlHelper.draw_process_trial(chart, x, 30, "P" + p.getProcess_ID());
+            else
+                FxmlHelper.draw_process(chart, x, 30, "P" + p.getProcess_ID(),i );
+            prev_process_s = p.getProcess_ID();
+            x+=30;
+        }
+    }
 }
