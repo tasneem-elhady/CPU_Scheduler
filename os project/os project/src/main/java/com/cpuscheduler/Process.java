@@ -41,6 +41,8 @@ public class Process implements Comparable<Process> {
         ArrivalTime = arrivalTime;
         BurstTime = burstTime;
         Priority = priority;
+        this.remaining_burst_time = burstTime;
+
     }
     public Process(int process_ID, int arrivalTime, int burstTime) {
         this.processID = process_ID;
@@ -141,7 +143,7 @@ public class Process implements Comparable<Process> {
     }
     public String toString(){
         return (getProcess_ID()+" : arrival= "+getArrivalTime()+" , burst= "+ getBurstTime() + ", priority = " + getPriority()
-                +" , Start time= "+getStart_time()+" , End time= "+getEnd_time());
+                +" , Start time= "+getStart_time()+" , End time= "+getEnd_time() + "remaining burst time " + getRemaining_burst_time());
     }
 
     @Override
