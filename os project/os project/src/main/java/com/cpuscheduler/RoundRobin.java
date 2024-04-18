@@ -9,11 +9,11 @@ public class RoundRobin implements Schedular{
 //    private ArrayList<Integer> completedTime=new ArrayList<>();
 //    private ArrayList<Integer> accumlativeCompletedTime=new ArrayList<>();
 //    private ArrayList<Integer> remainingTime=new ArrayList<>();
-    private Queue<LiveTime> liveTimeQueue =new LinkedList<>() ;
+//    private Queue<LiveTime> liveTimeQueue =new LinkedList<>() ;
 
-    public Queue<LiveTime> getLiveTimeQueue() {
-        return liveTimeQueue;
-    }
+//    public Queue<LiveTime> getLiveTimeQueue() {
+//        return liveTimeQueue;
+//    }
 
     public  ArrayList<Process> getProcessesCopy() {
         return processesCopy;
@@ -54,6 +54,8 @@ public class RoundRobin implements Schedular{
     }
 
     public Queue<LiveTime> Schedule(ArrayList<Process> processes,int quantum_time) {
+        Queue<LiveTime> liveTimeQueue =new LinkedList<>() ;
+
         int diff, no_of_switches=0,time=0;
         boolean first =true;
         setNo_of_processes(processes.size());
@@ -137,6 +139,10 @@ public class RoundRobin implements Schedular{
                 }
             }
         }
+        for (Process p : processes)
+        {
+            p.setRemaining_burst_time(p.getBurstTime());
+        }
 //        return Output;
         return liveTimeQueue;
     }
@@ -172,26 +178,23 @@ public class RoundRobin implements Schedular{
         }
         return (sum/ getNo_of_processes());
     }
-
-    public  int choosenProcess(Queue<LiveTime> result,int t){
+    public static ArrayList<ByTime>  choosenProcess(Queue<LiveTime> result){
 
         ArrayList<ByTime> t_by_t =new ArrayList<>();
+        System.out.println(t_by_t);
         int time=0;
-        for (LiveTime p: result
-        ) {
+        for (LiveTime p: result) {
             for (int i=0;i<p.getCompletedTime();i++){
-                t_by_t.add(new ByTime(time,p.getP().getProcess_ID()));
+                t_by_t.add(new ByTime(time,p.getP(),p.getRemainingTime()+p.getCompletedTime()-i - 1));
                 time++;
             }
         }
-        for (ByTime b:t_by_t
-        ) {
-            if(b.getTime()==t) return b.getP_id();
-        }
-//            return t_by_t;
-        return -1;
-    }
 
+//        System.out.println("in round robinnn/////////////////////////////////////////////////////////////////////////////////" + result);
+//        System.out.println("in round robinnn/////////////////////////////////////////////////////////////////////////////////" + t_by_t);
+        return t_by_t;
+
+}
     public static void main(String[] args) {
         ArrayList<Process> processes = new ArrayList<>();
         processes.add(new Process(1,2,5));
@@ -234,23 +237,37 @@ public class RoundRobin implements Schedular{
 
 class ByTime{
     private int time;
-    private int p_id;
+    private Process p;
 
-    public ByTime(int time, int p_id) {
+    public int getRemaining_time() {
+        return remaining_time;
+    }
+
+    private int remaining_time;
+
+    public ByTime(int time, Process p, int remaining_time) {
+
         this.time = time;
-        this.p_id = p_id;
+        this.p = p;
+        this.remaining_time = remaining_time;
+    }
+
+
+    public ByTime(int time, Process p_id) {
+        this.time = time;
+        this.p = p_id;
     }
 
     public int getTime() {
         return time;
     }
 
-    public int getP_id() {
-        return p_id;
+    public Process getP() {
+        return p;
     }
 
     @Override
     public String toString() {
-        return "At time = "+time+", There is process no. = "+p_id;
+        return "At time = "+time+", There is process no. = "+p.getProcess_ID() +"\n";
     }
 }
