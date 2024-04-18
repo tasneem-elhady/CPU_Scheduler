@@ -95,12 +95,15 @@ public class FXMLcontroller implements Initializable {
     Schedular schedule;
 
     int Live_current_time = 0;
+    int Live_index = 0;
     int prev_process = -1;
     double x = live.getLayoutX();
     Queue<Process> output = new LinkedList<>();
     Queue<LiveTime> outputLiveTime = new LinkedList<>();
+    ArrayList<ByTime> chosen_process = new ArrayList<>();
 
     Timeline tl;
+    Rectangle process_block;
 
 
     boolean running = false;
@@ -187,9 +190,10 @@ public class FXMLcontroller implements Initializable {
             }
         });
         tl = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
-
+            System.out.println("at run ////////////////////////////////////////////////////////////////////////////////////////");
+            System.out.println("current time  "+Live_current_time);
             x+=30;
-            if(SchedulerType.getValue().toString().equals("non-preemptive priority")&& !output.isEmpty()) {
+            if(SchedulerType.getValue().toString().equals("non-preemptive priority")) {
                 Process p = output.peek();
 
                 if (p.getRemaining_burst_time() == 1) {
@@ -202,17 +206,69 @@ public class FXMLcontroller implements Initializable {
                 p.getProcessIndex().setRemainingTime(p.getRemaining_burst_time() + "");
 //            drawing the process
                 if (prev_process == p.getProcess_ID())
-                    FxmlHelper.draw_process_trial(live, x, 30, "P" + p.getProcess_ID());
+                    FxmlHelper.draw_process_trial(live, x, 30, "P" + p.getProcess_ID(),Live_current_time);
                 else
                     FxmlHelper.draw_process(live, x, 30, "P" + p.getProcess_ID(), Live_current_time);
                 prev_process = p.getProcess_ID();
-                Live_current_time++;
-                System.out.println("at run ////////////////////////////////////////////////////////////////////////////////////////");
-                System.out.println("current time  "+Live_current_time);
+//                Live_current_time++;
+
                 FxmlHelper.printQueue(output, Live_current_time);
                 System.out.println("//////////////////////////////////////////////////////////////////////////////");
             }
-            else if(SchedulerType.getValue().toString().equals("non-preemptive SJF")&& !output.isEmpty()) {
+            else if(SchedulerType.getValue().toString().equals("Round Robin")&& chosen_process.size() != Live_index) {
+                System.out.println("Live index is " + Live_index);
+                System.out.println(chosen_process.size());
+//                System.out.println(outputLiveTime);
+                chosen_process = RoundRobin.choosenProcess(outputLiveTime);
+                System.out.println(chosen_process);
+//                sets remaining time value in table
+                chosen_process.get(Live_index).getP().getProcessIndex().setRemainingTime(chosen_process.get(Live_index).getRemaining_time()+ "");
+//            drawing the process
+                if (prev_process == chosen_process.get(Live_index).getP().getProcess_ID()) {
+                    process_block = FxmlHelper.draw_process_trial(live, x, 30, "P" + chosen_process.get(Live_index).getP().getProcess_ID(), Live_current_time);
+                }
+                else {
+                    process_block = FxmlHelper.draw_process(live, x, 30, "P" + chosen_process.get(Live_index).getP().getProcess_ID(), Live_current_time);
+                }
+                prev_process = chosen_process.get(Live_index).getP().getProcessID();
+                if(chosen_process.size() - 1 == Live_index)
+                    FxmlHelper.draw_line(live, process_block,Live_index+1);
+                Live_index++;
+////                Live_current_time++;
+//                FxmlHelper.printQueue(output, Live_current_time);
+            }
+            else if(SchedulerType.getValue().toString().equals("preemptive priority") && output.size() != Live_index) {
+
+                Process p = (Process) PreemptivePriorityScheduling.getScheduledQueueP().toArray()[Live_index];
+
+                if (prev_process == p.getProcess_ID())
+                    process_block = FxmlHelper.draw_process_trial(live, x, 30, "P" + p.getProcess_ID(),Live_index);
+                else
+                    process_block = FxmlHelper.draw_process(live, x, 30, "P" + p.getProcess_ID(), Live_current_time);
+                p.getProcessIndex().setRemainingTime( PreemptivePriorityScheduling.getScheduledQueueRBT().toArray()[Live_index]+ "");
+                prev_process = p.getProcess_ID();
+
+                if(output.size() - 1 == Live_index)
+                    FxmlHelper.draw_line(live, process_block,Live_index+1);
+                Live_index++;
+
+            }
+            else if(SchedulerType.getValue().toString().equals("preemptive SJF") && output.size() != Live_current_time){
+                System.out.println("at second " + Live_current_time+"/////////////////////////////////////////////////////////////\n");
+                Process p = (Process) output.toArray()[Live_current_time];
+
+                if (prev_process == p.getProcess_ID())
+                    process_block = FxmlHelper.draw_process_trial(live, x, 30, "P" + p.getProcess_ID(),Live_current_time);
+                else
+                    process_block = FxmlHelper.draw_process(live, x, 30, "P" + p.getProcess_ID(), Live_current_time);
+//                p.getProcessIndex().setRemainingTime( p.getRemaining_burst_time()+ "");
+                prev_process = p.getProcess_ID();
+
+                if(output.size() - 1 == Live_current_time)
+                    FxmlHelper.draw_line(live, process_block,Live_current_time + 1);
+//                Live_current_time++;
+            }
+            else if(SchedulerType.getValue().toString().equals("FCFS") && !output.isEmpty()) {
                 Process p = output.peek();
 
                 if (p.getRemaining_burst_time() == 1) {
@@ -225,67 +281,16 @@ public class FXMLcontroller implements Initializable {
                 p.getProcessIndex().setRemainingTime(p.getRemaining_burst_time() + "");
 //            drawing the process
                 if (prev_process == p.getProcess_ID())
-                    FxmlHelper.draw_process_trial(live, x, 30, "P" + p.getProcess_ID());
+                    process_block = FxmlHelper.draw_process_trial(live, x, 30, "P" + p.getProcess_ID(),Live_current_time);
                 else
-                    FxmlHelper.draw_process(live, x, 30, "P" + p.getProcess_ID(), Live_current_time);
+                    process_block = FxmlHelper.draw_process(live, x, 30, "P" + p.getProcess_ID(), Live_current_time);
                 prev_process = p.getProcess_ID();
-                Live_current_time++;
-                System.out.println("at run ////////////////////////////////////////////////////////////////////////////////////////");
-                System.out.println("current time  "+Live_current_time);
-                FxmlHelper.printQueue(output, Live_current_time);
-                System.out.println("//////////////////////////////////////////////////////////////////////////////");
+                if(output.isEmpty())
+                    FxmlHelper.draw_line(live, process_block,Live_current_time + 1);
+//                Live_current_time++;
             }
-            else if(SchedulerType.getValue().toString().equals("Round Robin")) {
-                LiveTime pL = outputLiveTime.peek();
-                Process p = pL.getP();
-
-                if (p.getRemaining_burst_time() == 1) {
-//                not sure
-                    data.remove(p);
-                }
-                if (pL.getCompletedTime() == 1)
-                    outputLiveTime.remove();
-
-                pL.setCompletedTime(pL.getCompletedTime() - 1);
-                p.setRemaining_burst_time(p.getRemaining_burst_time() - 1);
-//            sets remaining time value in table
-                p.getProcessIndex().setRemainingTime(p.getRemaining_burst_time() + "");
-//            drawing the process
-                if (prev_process == p.getProcess_ID())
-                    FxmlHelper.draw_process_trial(live, x, 30, "P" + p.getProcess_ID());
-                else
-                    FxmlHelper.draw_process(live, x, 30, "P" + p.getProcess_ID(), Live_current_time);
-                prev_process = p.getProcess_ID();
-                Live_current_time++;
-                FxmlHelper.printQueue(output, Live_current_time);
-
-            }
-            else if(SchedulerType.getValue().toString().equals("preemptive priority") && !output.isEmpty()) {
-                Process p;
-                if(added) {
-                    System.out.println("Queue before index////////////////////////////////////////////////////////n"+output);
-                    p = FxmlHelper.get_process_at_index(output, Live_current_time);
-
-                    System.out.println("Queue after index//////////////////////////////////////////////////n"+output);
-                    added = false;
-                }
-                else
-                    p = output.remove();
-                if (prev_process == p.getProcess_ID())
-                    FxmlHelper.draw_process_trial(live, x, 30, "P" + p.getProcess_ID());
-                else
-                    FxmlHelper.draw_process(live, x, 30, "P" + p.getProcess_ID(), Live_current_time);
-                p.getProcessIndex().setRemainingTime( PreemptivePriorityScheduling.getScheduledQueueRBT().toArray()[Live_current_time]+ "");
-                prev_process = p.getProcess_ID();
-                Live_current_time++;
-
-            }
-
-        }
-            ));
-
-//        live.setMinHeight(live_scroll_pane.getMinHeight());
-
+            Live_current_time++;
+        }));
     }
 
     //    on action of compute button
@@ -327,7 +332,7 @@ public class FXMLcontroller implements Initializable {
         }
         else if(SchedulerType.getValue().toString().equals("preemptive priority")) {
             System.out.println("preemptive priority trial////////////////////////////////////////////");
-            double x = live.getLayoutX() + 30;
+            double x = chart.getLayoutX() + 30;
             Queue<Process> output = schedule.Schedule(data_clone);
             FxmlHelper.draw_chart_PP(output,chart);
         }
@@ -341,9 +346,15 @@ public class FXMLcontroller implements Initializable {
             FxmlHelper.draw_chart(output, chart);
         }
         else if(SchedulerType.getValue().toString().equals("preemptive SJF")) {
-            Queue<LiveTime> output = ((SJF_Prem)schedule).Schedule(data_clone,0);
-            System.out.println(output);
-            FxmlHelper.draw_chart_RR(output, chart);
+            double x = chart.getLayoutX() + 30;
+
+            Queue<Process> output = schedule.Schedule(data_clone);
+            System.out.println("//////////////////////////////////////////////////////////////////////\n" + output);
+            FxmlHelper.draw_chart_PP(output,chart);
+        }
+        else if(SchedulerType.getValue().toString().equals("FCFS")) {
+            Queue <Process> output = ((FCFS)schedule).Schedule(data_clone, 0);
+            FxmlHelper.draw_chart(output, chart);
         }
         else
         {
@@ -464,8 +475,8 @@ public class FXMLcontroller implements Initializable {
         chart.getChildren().clear();
         output.clear();
         Live_current_time = 0;
+        Live_index = 0;
         prev_process = -1;
-
         x = live.getLayoutX();
         System.out.println(live.heightProperty());
         if(running)
@@ -504,28 +515,41 @@ public class FXMLcontroller implements Initializable {
                 ((priorityNonPreemptiveScheduler) schedule).setProcessStartTimeAndEndTime(data, 0);
                 System.out.println(output);
             }
-            else if (SchedulerType.getValue().toString().equals("non-preemptive SJF")) {
-                output = ((SJF_Non_Prem) schedule).Schedule(data, 0);
-                System.out.println(output);
-            }
 
             else if(SchedulerType.getValue().toString().equals("Round Robin")) {
-                System.out.println(SchedulerType.getValue().toString());
-                int quanta = Integer.parseInt(QuantumTimeTF.getText());
-//            System.out.println(quanta);
-//            System.out.println(data);
-//                Queue<LiveTime> output;
+//                System.out.println(SchedulerType.getValue().toString());
+//                int quanta = Integer.parseInt(QuantumTimeTF.getText());
+////            System.out.println(quanta);
+////            System.out.println(data);
+////                Queue<LiveTime> output;
+//                outputLiveTime = ((RoundRobin)schedule).Schedule(data, quanta);
+//                System.out.println(output);
+                int quanta;
+                try
+                {
+                    quanta = Integer.parseInt(QuantumTimeTF.getText());
+                }catch (Exception e)
+                {
+                    quanta = 1;
+                }
                 outputLiveTime = ((RoundRobin)schedule).Schedule(data, quanta);
-                System.out.println(output);
+                chosen_process = RoundRobin.choosenProcess(outputLiveTime);
+
             }
             else if(SchedulerType.getValue().toString().equals("preemptive priority")) {
                 System.out.println(SchedulerType.getValue().toString());
                 output = schedule.Schedule(data);
 //                output = PreemptivePriorityScheduling.getScheduledQueueP();
             }
-
-
-
+            else if(SchedulerType.getValue().toString().equals("preemptive SJF")) {
+                System.out.println(SchedulerType.getValue().toString());
+                output = schedule.Schedule(data);
+//                output = PreemptivePriorityScheduling.getScheduledQueueP();
+            }
+            else if(SchedulerType.getValue().toString().equals("FCFS")) {
+                output = ((FCFS) schedule).Schedule(data, 0);
+                System.out.println(output);
+            }
         }
 
 //        copied to initialize method
@@ -598,17 +622,41 @@ public class FXMLcontroller implements Initializable {
                     FxmlHelper.printQueue(output, 0);
                     System.out.println("///////////////////////////////////////////////////////////////////////////////");
                 }
+                else if(SchedulerType.getValue().toString().equals("FCFS")) {
+                    output = ((FCFS)schedule).Schedule(data,Live_current_time);
+                }
+                else if(SchedulerType.getValue().toString().equals("Round Robin")) {
+                    int quanta;
+                    try
+                    {
+                         quanta = Integer.parseInt(QuantumTimeTF.getText());
+                    }
+                    catch (Exception e)
+                    {
+                        quanta = 1;
+                    }
+                    System.out.println(outputLiveTime);
+                    outputLiveTime = ((RoundRobin)schedule).Schedule(data, quanta);
+                    chosen_process = RoundRobin.choosenProcess(outputLiveTime);
+                    System.out.println(outputLiveTime);
+                }
                 else if(SchedulerType.getValue().toString().equals("non-preemptive SJF")){
                     output = ((SJF_Non_Prem) schedule).Schedule(data, Live_current_time);
                     System.out.println("at Live//////////////////////////////////////////////////////////////////////////");
                     FxmlHelper.printQueue(output, 0);
                     System.out.println("///////////////////////////////////////////////////////////////////////////////");
                 }
-                else{
+                else
+                {
+                    System.out.println("entered successfulyyy /////////////////////////////////////////////////////////////");
+                    System.out.println(data);
                     output = schedule.Schedule(data);
+                    System.out.println(output);
+                    System.out.println("called successfulyyy /////////////////////////////////////////////////////////////");
+
 //                    output = PreemptivePriorityScheduling.getScheduledQueueP();
                 }
-                added = true;
+//                added = true;
             }
         }catch (Exception e)
         {

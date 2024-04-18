@@ -65,10 +65,9 @@ public class FxmlHelper {
         switch (type){
             case "FCFS":
 
-                break;
+                return new FCFS();
             case "preemptive SJF":
-
-                break;
+                return new SJF_Prem();
             case"non-preemptive SJF":
 
                 return new SJF_Non_Prem();
@@ -82,7 +81,7 @@ public class FxmlHelper {
         }
         return null;
     }
-    public static void draw_process(Pane pane, double x, double width, String id, int start_time){
+    public static Rectangle draw_process(Pane pane, double x, double width, String id, int start_time){
         Rectangle process_block = new Rectangle();
         process_block.yProperty().bind(pane.heightProperty().divide(2));
         process_block.setX(x);
@@ -116,9 +115,10 @@ public class FxmlHelper {
         pane.getChildren().add(label);
         pane.getChildren().add(process_label);
         pane.getChildren().add(l);
+        return process_block;
     }
 
-    public static Rectangle draw_process_trial (Pane pane, double x, double width, String id) {
+    public static Rectangle draw_process_trial (Pane pane, double x, double width, String id, int time) {
         Rectangle process_block = new Rectangle();
         process_block.yProperty().bind(pane.heightProperty().divide(2));
         process_block.setX(x);
@@ -135,12 +135,19 @@ public class FxmlHelper {
         process_label.setStyle("-fx-font-size:15px;-fx-fill:red;");
         pane.getChildren().add(process_block);
         pane.getChildren().add(process_label);
+        Text label;
+        label = new Text();
+        label.setText(""+time);
+        label.xProperty().bind(process_block.xProperty().subtract(5));
+        label.yProperty().bind(process_block.yProperty().add(process_block.heightProperty()).add(15));
+        label.setStyle("-fx-font-size:15px;-fx-fill:black;");
+        pane.getChildren().add(label);
         return process_block;
     }
     public static void draw_line(Pane pane, Rectangle process_block, int time){
         Line l= new Line();
         double x = process_block.getX();
-        l.setEndX(x);l.setStartX(x);
+        l.setEndX(x+30);l.setStartX(x+30);
         l.startYProperty().bind(process_block.yProperty());
         l.endYProperty().bind(process_block.yProperty().add(process_block.heightProperty()));
         l.setStroke(Color.BLACK);
@@ -152,8 +159,10 @@ public class FxmlHelper {
         label.xProperty().bind(l.startXProperty().subtract(5));
         label.yProperty().bind(l.endYProperty().add(15));
         label.setStyle("-fx-font-size:15px;-fx-fill:black;");
+        System.out.println(pane);
         pane.getChildren().add(l);
         pane.getChildren().add(label);
+        System.out.println(pane);
     }
 
     public static void draw_chart(Queue<Process> processes,Pane pane){
@@ -251,7 +260,7 @@ public class FxmlHelper {
 //                System.out.println(p);
 //                System.out.println(output);
             if (prev_process_s == p.getProcess_ID())
-                FxmlHelper.draw_process_trial(chart, x, 30, "P" + p.getProcess_ID());
+                FxmlHelper.draw_process_trial(chart, x, 30, "P" + p.getProcess_ID(),i);
             else
                 FxmlHelper.draw_process(chart, x, 30, "P" + p.getProcess_ID(),i );
             prev_process_s = p.getProcess_ID();
