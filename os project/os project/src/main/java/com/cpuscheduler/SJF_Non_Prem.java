@@ -20,13 +20,19 @@ public class SJF_Non_Prem implements Schedular{
             int min = processes.get(0).getRemaining_burst_time();
             for(int j = 0 ; j < processes.size() ; j++){
                 if(processes.get(j).getArrivalTime() > LiveTime || processes.get(j).getRemaining_burst_time() == 0) continue;
-                if(min > processes.get(j).getRemaining_burst_time()||LiveTime >= processes.get(j).getArrivalTime()){
+                if(processes.get(j).isFirst_response() == false){
+                    min = processes.get(j).getRemaining_burst_time();
+                    index = j;
+                    break;
+                }
+                if(min > processes.get(j).getRemaining_burst_time()&&LiveTime >= processes.get(j).getArrivalTime()){
                     min = processes.get(j).getRemaining_burst_time();
                     index = j;
                 }
             }
             ArrayList<Process> temp = new ArrayList<>();
             temp.add(processes.get(index));
+            temp.get(0).setFirst_response(false);
             processes.remove(processes.get(index));
             if(temp.get(0).getArrivalTime() <= LiveTime) {
                 temp.get(0).setStart_time(LiveTime);
@@ -34,9 +40,15 @@ public class SJF_Non_Prem implements Schedular{
             else{
                 temp.get(0).setStart_time(temp.get(0).getArrivalTime());
             }
+            if(temp.get(0).getStart_time() == LiveTime){
+                temp.get(0).setRemaining_burst_time(temp.get(0).getBurstTime() - currenttime );
+            }
+            else if(temp.get(0).getStart_time() > LiveTime){
+                temp.get(0).setRemaining_burst_time(temp.get(0).getBurstTime() - (currenttime - temp.get(0).getStart_time()) );
+            }
             LiveTime+= temp.get(0).getBurstTime();
             temp.get(0).setEnd_time(temp.get(0).getStart_time() + temp.get(0).getBurstTime());
-            temp.get(0).setRemaining_burst_time(temp.get(0).getBurstTime() - (currenttime - temp.get(0).getStart_time()));
+//            temp.get(0).setRemaining_burst_time(temp.get(0).getBurstTime() - (currenttime - temp.get(0).getStart_time()));
             n--;
             p.add(temp.get(0));
         }
@@ -79,8 +91,8 @@ public class SJF_Non_Prem implements Schedular{
 //    }
     public static void main(String[] args) {
         Process p1=new Process(1,0,5);
-        Process p2=new Process(2,0,3);
-        Process p3=new Process(3,0,1);
+        Process p2=new Process(2,0,6);
+        Process p3=new Process(3,0,7);
         ArrayList<Process>p=new ArrayList<>();
         p.add(p1);
         p.add(p2);
