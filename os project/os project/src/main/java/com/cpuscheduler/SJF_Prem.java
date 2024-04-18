@@ -4,13 +4,13 @@ import java.util.*;
 
 public class SJF_Prem implements Schedular{
     private int  time=0;
-    private int prevID=-1;
-    private Deque<LiveTime> liveTimeQueue =new LinkedList<>() ;
+//    private int prevID=-1;
+//    private Deque<LiveTime> liveTimeQueue =new LinkedList<>() ;
     @Override
 
-    public Queue<Process> Schedule(ArrayList<Process> MyProcesses){return null;}
 
-    public Queue<Process> Schedule(ArrayList<Process> MyProcesses,int x){
+
+    public Queue<Process> Schedule(ArrayList<Process> MyProcesses){
         ArrayList<Process> processes = (ArrayList<Process>) MyProcesses.clone();
         Collections.sort(processes);
         Queue<Process> Completed=new LinkedList<Process>();
@@ -39,26 +39,26 @@ public class SJF_Prem implements Schedular{
                         processes.get(index).setFirst_response(false);
 
                     }
-                    if(processes.get(index).getProcess_ID()==prevID){
-
-                        processes.get(index).setRemaining_burst_time(processes.get(index).getRemaining_burst_time() - 1);
-
-
-                        p.getLast().setRemaining_burst_time(processes.get(index).getRemaining_burst_time());
-                        p.getLast().setCompleted_time(time+1);
-                        p.getLast().setTime_taken(p.getLast().getTime_taken()+1);
-//                        liveTimeQueue.getLast().setCompletedTime(liveTimeQueue.getLast().getCompletedTime()+1);
-//                        liveTimeQueue.getLast().setAccumlativeTime((processes.get(index).getBurstTime() - processes.get(index).getRemaining_burst_time()));
-//                        liveTimeQueue.getLast().setRemainingTime(liveTimeQueue.getLast().getRemainingTime()-1);
-                    }
+//                    if(processes.get(index).getProcess_ID()==prevID){
+//
+//                        processes.get(index).setRemaining_burst_time(processes.get(index).getRemaining_burst_time() - 1);
+//
+//
+//                        p.getLast().setRemaining_burst_time(processes.get(index).getRemaining_burst_time());
+//                        p.getLast().setCompleted_time(time+1);
+//                        p.getLast().setTime_taken(p.getLast().getTime_taken()+1);
+////                        liveTimeQueue.getLast().setCompletedTime(liveTimeQueue.getLast().getCompletedTime()+1);
+////                        liveTimeQueue.getLast().setAccumlativeTime((processes.get(index).getBurstTime() - processes.get(index).getRemaining_burst_time()));
+////                        liveTimeQueue.getLast().setRemainingTime(liveTimeQueue.getLast().getRemainingTime()-1);
+//                    }
                     else {
-
+                        processes.get(index).setRemaining_burst_time(processes.get(index).getRemaining_burst_time() - 1);
                         p.add(new Process(processes.get(index),time));
 
-                        processes.get(index).setRemaining_burst_time(processes.get(index).getRemaining_burst_time() - 1);
+
 //                        liveTimeQueue.add(new LiveTime(time, processes.get(index).getRemaining_burst_time(), 1, (processes.get(index).getBurstTime() - processes.get(index).getRemaining_burst_time()), processes.get(index)));
                     }
-                prevID=processes.get(index).getProcess_ID();
+//                prevID=processes.get(index).getProcess_ID();
                     if(processes.get(index).getRemaining_burst_time()==0){
                         processes.get(index).setEnd_time(time+1);
                        processes.remove(index);
@@ -111,13 +111,15 @@ public class SJF_Prem implements Schedular{
         p.add(p2);
         p.add(p3);
         SJF_Prem sch=new SJF_Prem();
-        Queue<Process> q =sch.Schedule(p,0);
+        Queue<Process> q =sch.Schedule(p);
         double t =sch.calculate_avg_turn_around_time(p);
         double t2 =sch.calculate_avg_wait_time(p);
         for(Process o : q){
             System.out.println(o.getProcess_ID());
             System.out.println("start @ "+o.getStart_time());
             System.out.println("Completed @ "+o.getCompleted_time());
+            System.out.println("take @ "+o.getTime_taken());
+            System.out.println("remaining @ "+o.getRemaining_burst_time());
 
 //            System.out.println(o.);
 

@@ -57,6 +57,7 @@ public class Process implements Comparable<Process> {
         this.remaining_burst_time = p.getRemaining_burst_time();
         this.Start_time=time;
         this.completed_time=time+1;
+        this.time_taken=1;
     }
 
     public int getBurstTime() {
