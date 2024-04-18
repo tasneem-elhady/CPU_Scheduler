@@ -46,6 +46,31 @@ public class FxmlHelper {
         }
     }
     }
+    public static void printQueue(Queue<LiveTime> queue ) {
+
+        Queue<Process> clonedList = new LinkedList<>() ;
+        for (LiveTime p : queue) {
+            clonedList.add(p.getP());
+
+            int queueSize = queue.size(); // Get the queue size
+            int currentIndex = 0;
+
+            while (currentIndex < queueSize) {
+                Process process = clonedList.poll(); // Remove and return the head element
+                if (process != null) {
+//                if (currentIndex ==0 ){
+//                   process.setRemaining_burst_time(process.getEnd_time()-currentTime);
+//                }
+                    System.out.println("Process:");
+                    System.out.println("  - Process ID: " + process.getProcessID());
+                    System.out.println("  - Remaining Burst Time: " + process.getRemaining_burst_time());
+                    System.out.println("  - Priority: " + process.getPriority());
+                    System.out.println("Start time " +process.getStart_time()+" End time "+process.getEnd_time());
+                }
+                currentIndex++;
+            }
+        }
+    }
 
     public static ArrayList<Process> cloneList(ArrayList<Process> List) {
         ArrayList<Process> clonedList = new ArrayList<Process>(List.size());
@@ -176,6 +201,49 @@ public class FxmlHelper {
 
             draw_process(pane, x, 25 * p.getBurstTime(), "P"+p.getProcess_ID(), p.getStart_time());
             end_of_process = p.getEnd_time();
+            x += 25 * p.getBurstTime();
+        }
+        Line l= new Line();
+        l.setEndX(x);l.setStartX(x);
+        l.startYProperty().bind(pane.heightProperty().divide(2));
+        l.endYProperty().bind(l.startYProperty().add(pane.heightProperty().divide(3)));
+        l.setStroke(Color.BLACK);
+        l.setStrokeWidth(1);
+        Text label;
+        label = new Text();
+        label.setText(""+end_of_process);
+        label.xProperty().bind(l.startXProperty().subtract(5));
+        label.yProperty().bind(l.endYProperty().add(15));
+        label.setStyle("-fx-font-size:15px;-fx-fill:black;");
+        pane.getChildren().add(label);
+        pane.getChildren().add(l);
+    }
+    public static void draw_chart_PS(Queue<Process> processes,Pane pane){
+        double x = pane.getLayoutX()+25;
+        int end_of_process = 0;
+        for (Process p :processes)
+        {
+            if (end_of_process != p.getStart_time()+p.getTime_taken())
+            {
+                Line l= new Line();
+                l.setEndX(x);l.setStartX(x);
+                l.startYProperty().bind(pane.heightProperty().divide(2));
+                l.endYProperty().bind(l.startYProperty().add(pane.heightProperty().divide(3)));
+                l.setStroke(Color.BLACK);
+                l.setStrokeWidth(1);
+                Text label;
+                label = new Text();
+                label.setText(""+end_of_process);
+                label.xProperty().bind(l.startXProperty().subtract(5));
+                label.yProperty().bind(l.endYProperty().add(15));
+                label.setStyle("-fx-font-size:15px;-fx-fill:black;");
+                pane.getChildren().add(label);
+                pane.getChildren().add(l);
+                x += ((p.getStart_time() - end_of_process)*25);
+            }
+
+            draw_process(pane, x, 25 * p.getBurstTime(), "P"+p.getProcess_ID(), p.getStart_time());
+            end_of_process = p.getCompleted_time();
             x += 25 * p.getBurstTime();
         }
         Line l= new Line();

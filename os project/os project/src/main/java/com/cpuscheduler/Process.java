@@ -10,6 +10,7 @@ public class Process implements Comparable<Process> {
     private int end_time;
     private int remaining_burst_time;
     private int completed_time;
+    private int time_taken;
     private boolean first_response=true;
 
     public Process(processInTable processIndex) {
@@ -49,7 +50,15 @@ public class Process implements Comparable<Process> {
         this.ArrivalTime = arrivalTime;
         this.BurstTime = burstTime;
         this.remaining_burst_time = burstTime;
+    } public Process(Process p,int time) {
+        this.processID = p.getProcessID();
+        this.ArrivalTime = p.getArrivalTime();
+        this.BurstTime = p.getBurstTime();
+        this.remaining_burst_time = p.getRemaining_burst_time();
+        this.Start_time=time;
+        this.completed_time=time+1;
     }
+
     public int getBurstTime() {
         return BurstTime;
     }
@@ -149,5 +158,13 @@ public class Process implements Comparable<Process> {
     @Override
     public int compareTo(Process o) {
         return this.getArrivalTime()-((Process)o).getArrivalTime();
+    }
+
+    public int getTime_taken() {
+        return time_taken;
+    }
+
+    public void setTime_taken(int time_taken) {
+        this.time_taken = time_taken;
     }
 }

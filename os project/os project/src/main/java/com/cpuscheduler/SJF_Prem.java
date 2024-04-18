@@ -10,11 +10,13 @@ public class SJF_Prem implements Schedular{
 
     public Queue<Process> Schedule(ArrayList<Process> MyProcesses){return null;}
 
-    public Queue<LiveTime> Schedule(ArrayList<Process> MyProcesses,int x){
+    public Queue<Process> Schedule(ArrayList<Process> MyProcesses,int x){
         ArrayList<Process> processes = (ArrayList<Process>) MyProcesses.clone();
         Collections.sort(processes);
-        Queue<Process> p =new LinkedList<Process>();
+        Queue<Process> Completed=new LinkedList<Process>();
+        Deque<Process> p =new LinkedList<Process>();
         int n=processes.size();
+
 
         while(!processes.isEmpty()) {
 
@@ -42,15 +44,19 @@ public class SJF_Prem implements Schedular{
                         processes.get(index).setRemaining_burst_time(processes.get(index).getRemaining_burst_time() - 1);
 
 
-                        liveTimeQueue.getLast().setCompletedTime(liveTimeQueue.getLast().getCompletedTime()+1);
-                        liveTimeQueue.getLast().setAccumlativeTime((processes.get(index).getBurstTime() - processes.get(index).getRemaining_burst_time()));
-                        liveTimeQueue.getLast().setRemainingTime(liveTimeQueue.getLast().getRemainingTime()-1);
+                        p.getLast().setRemaining_burst_time(processes.get(index).getRemaining_burst_time());
+                        p.getLast().setCompleted_time(time+1);
+                        p.getLast().setTime_taken(p.getLast().getTime_taken()+1);
+//                        liveTimeQueue.getLast().setCompletedTime(liveTimeQueue.getLast().getCompletedTime()+1);
+//                        liveTimeQueue.getLast().setAccumlativeTime((processes.get(index).getBurstTime() - processes.get(index).getRemaining_burst_time()));
+//                        liveTimeQueue.getLast().setRemainingTime(liveTimeQueue.getLast().getRemainingTime()-1);
                     }
                     else {
 
-                        p.add(processes.get(index));
+                        p.add(new Process(processes.get(index),time));
+
                         processes.get(index).setRemaining_burst_time(processes.get(index).getRemaining_burst_time() - 1);
-                        liveTimeQueue.add(new LiveTime(time, processes.get(index).getRemaining_burst_time(), 1, (processes.get(index).getBurstTime() - processes.get(index).getRemaining_burst_time()), processes.get(index)));
+//                        liveTimeQueue.add(new LiveTime(time, processes.get(index).getRemaining_burst_time(), 1, (processes.get(index).getBurstTime() - processes.get(index).getRemaining_burst_time()), processes.get(index)));
                     }
                 prevID=processes.get(index).getProcess_ID();
                     if(processes.get(index).getRemaining_burst_time()==0){
@@ -64,7 +70,8 @@ public class SJF_Prem implements Schedular{
             time++;
         }
 //        return p;
-        return liveTimeQueue;
+//        return liveTimeQueue;
+        return p;
     }
     @Override
     public double calculate_avg_wait_time(ArrayList<Process> processes){
@@ -104,16 +111,19 @@ public class SJF_Prem implements Schedular{
         p.add(p2);
         p.add(p3);
         SJF_Prem sch=new SJF_Prem();
-        Queue<LiveTime> q =sch.Schedule(p,0);
-//        double t =sch.calculate_avg_turn_around_time(p);
-//        double t2 =sch.calculate_avg_wait_time(p);
-        for(LiveTime o : q){
-           o.printLiveTime();
+        Queue<Process> q =sch.Schedule(p,0);
+        double t =sch.calculate_avg_turn_around_time(p);
+        double t2 =sch.calculate_avg_wait_time(p);
+        for(Process o : q){
+            System.out.println(o.getProcess_ID());
+            System.out.println("start @ "+o.getStart_time());
+            System.out.println("Completed @ "+o.getCompleted_time());
+
 //            System.out.println(o.);
 
         }
 
-//        System.out.println("Turn around= "+t);
-//        System.out.println("waiting= "+t2);
+        System.out.println("Turn around= "+t);
+        System.out.println("waiting= "+t2);
     }
 }
