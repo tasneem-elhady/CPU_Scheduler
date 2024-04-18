@@ -343,7 +343,7 @@ public class FXMLcontroller implements Initializable {
                  }
             
             Queue<Process> output = ((priorityNonPreemptiveScheduler)schedule).Schedule(data_clone,0);
-            ((priorityNonPreemptiveScheduler)schedule).setProcessStartTimeAndEndTime(data_clone,0);
+            ((priorityNonPreemptiveScheduler)schedule).setProcessStartTimeAndEndTime(output);
             FxmlHelper.draw_chart(output, chart);
         }
         else if(SchedulerType.getValue().toString().equals("non-preemptive SJF")) {
@@ -517,7 +517,7 @@ public class FXMLcontroller implements Initializable {
             System.out.println(SchedulerType.getValue().toString());
             if (SchedulerType.getValue().toString().equals("non-preemptive priority")) {
                 output = ((priorityNonPreemptiveScheduler) schedule).Schedule(data, 0);
-                ((priorityNonPreemptiveScheduler) schedule).setProcessStartTimeAndEndTime(data, 0);
+                ((priorityNonPreemptiveScheduler) schedule).setProcessStartTimeAndEndTime( output );
                 System.out.println(output);
             }
 
@@ -622,7 +622,7 @@ public class FXMLcontroller implements Initializable {
                 if(SchedulerType.getValue().toString().equals("non-preemptive priority")) {
                      output.clear();
                     output = ((priorityNonPreemptiveScheduler) schedule).Schedule(data, Live_current_time);
-                    ((priorityNonPreemptiveScheduler) schedule).setProcessStartTimeAndEndTime(data, Live_current_time);
+                    ((priorityNonPreemptiveScheduler) schedule).setProcessStartTimeAndEndTime(output);
                     System.out.println("at Live//////////////////////////////////////////////////////////////////////////");
 
                     FxmlHelper.printQueue(output, 0);
