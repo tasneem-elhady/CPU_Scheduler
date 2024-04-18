@@ -10,7 +10,7 @@ public class SJF_Non_Prem implements Schedular{
     public Queue<Process> Schedule(ArrayList<Process> MyProcesses){return null;}
 
     public Queue<Process> Schedule(ArrayList<Process> MyProcesses,  int currenttime ){
-        LiveTime = currenttime;
+//        LiveTime = currenttime;
         ArrayList<Process> processes = (ArrayList<Process>) MyProcesses.clone();
         Collections.sort(processes);
         int n = processes.size();
@@ -28,7 +28,14 @@ public class SJF_Non_Prem implements Schedular{
             ArrayList<Process> temp = new ArrayList<>();
             temp.add(processes.get(index));
             processes.remove(processes.get(index));
+            if(temp.get(0).getArrivalTime() <= LiveTime) {
+                temp.get(0).setStart_time(LiveTime);
+            }
+            else{
+                temp.get(0).setStart_time(temp.get(0).getArrivalTime());
+            }
             LiveTime+= temp.get(0).getBurstTime();
+            temp.get(0).setEnd_time(temp.get(0).getStart_time() + temp.get(0).getBurstTime());
             temp.get(0).setRemaining_burst_time(temp.get(0).getBurstTime() - (currenttime - temp.get(0).getStart_time()));
             n--;
             p.add(temp.get(0));
@@ -53,22 +60,23 @@ public class SJF_Non_Prem implements Schedular{
         }
         return sum/processes.size();
     }
-    public void setProcessStartTimeAndEndTime(ArrayList<Process> processes, int currenttime) {
-        Queue<Process> q = this.Schedule(processes, currenttime);
-        int time = 0;
-        for (Process process : q) {
-            if (process.getArrivalTime() <= time){
-                process.setStart_time(time);
-                time += process.getBurstTime();
-            }
-            else{
-                process.setStart_time(process.getArrivalTime());
-                time = process.getArrivalTime() + process.getBurstTime();
-            }
-            process.setEnd_time(process.getStart_time() + process.getBurstTime());
-//            System.out.println("Start time = " + process.getStart_time() + " End time = " + process.getEnd_time());
-        }
-    }
+//    public void setProcessStartTimeAndEndTime(ArrayList<Process> processes, int currenttime) {
+//        Queue<Process> q = this.Schedule(processes, currenttime);
+//        int time = 0;
+//        for (Process process : q) {
+//            if (process.getArrivalTime() <= time){
+//                process.setStart_time(time);
+//                time += process.getBurstTime();
+//            }
+//            else{
+//                process.setStart_time(process.getArrivalTime());
+//                time = process.getArrivalTime() + process.getBurstTime();
+//            }
+//            process.setEnd_time(process.getStart_time() + process.getBurstTime());
+//
+////            System.out.println("Start time = " + process.getStart_time() + " End time = " + process.getEnd_time());
+//        }
+//    }
     public static void main(String[] args) {
         Process p1=new Process(1,0,5);
         Process p2=new Process(2,0,3);
@@ -79,7 +87,7 @@ public class SJF_Non_Prem implements Schedular{
         p.add(p3);
         SJF_Non_Prem sch=new SJF_Non_Prem();
         Queue<Process> q =sch.Schedule(p , 0);
-        sch.setProcessStartTimeAndEndTime(p, 0);
+//        sch.setProcessStartTimeAndEndTime(p, 0);
         double t =sch.calculate_avg_turn_around_time(p);
         double t2 =sch.calculate_avg_wait_time(p);
         for(Process o : q){
