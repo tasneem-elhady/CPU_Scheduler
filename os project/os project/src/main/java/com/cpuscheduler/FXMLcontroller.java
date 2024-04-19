@@ -472,7 +472,7 @@ public class FXMLcontroller implements Initializable {
                         quanta = Integer.parseInt(QuantumTimeTF.getText());
                     }
                     catch (NumberFormatException e) {
-                        Alert Al = new Alert(Alert.AlertType.ERROR);
+                        Alert Al = new Alert(Alert.AlertType.WARNING);
                         Al.setContentText("Quantum time not set so default quanta = 1");
                         Al.show();
                     }
