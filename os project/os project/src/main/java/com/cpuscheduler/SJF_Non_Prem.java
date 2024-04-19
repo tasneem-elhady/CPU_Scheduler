@@ -7,9 +7,7 @@ public class SJF_Non_Prem implements Schedular{
     int LiveTime = 0;
     @Override
     public Queue<Process> Schedule(ArrayList<Process> MyProcesses){return null;}
-
     public Queue<Process> Schedule(ArrayList<Process> MyProcesses,  int currenttime ){
-//        LiveTime = currenttime;
         LiveTime = currenttime;
         ArrayList<Process> processes = (ArrayList<Process>) MyProcesses.clone();
         Collections.sort(processes);
@@ -17,6 +15,7 @@ public class SJF_Non_Prem implements Schedular{
         for (Process retrial : processes){
             if(retrial.getRemaining_burst_time() == 0){continue;}
             if(!retrial.isFirst_response()) {
+            if(!retrial.isFirst_response()  && retrial.getRemaining_burst_time() < retrial.getBurstTime()) {
                 CurrentServing = retrial.getProcessID();
                 LiveTime = retrial.getEnd_time();
                 break;
@@ -31,11 +30,9 @@ public class SJF_Non_Prem implements Schedular{
         Queue<Process> p = new LinkedList<>();
         while(n!=0){
             int index = 0;
-            int min = processes.get(0).getRemaining_burst_time();
             int min = 100;
             for(int j = 0 ; j < processes.size() ; j++){
                 if(processes.get(j).getArrivalTime() > LiveTime || processes.get(j).getRemaining_burst_time() == 0) continue;
-                if(processes.get(j).isFirst_response() == false){
                 if(processes.get(j).getProcess_ID() == CurrentServing){
                     min = processes.get(j).getRemaining_burst_time();
                     index = j;
@@ -47,17 +44,10 @@ public class SJF_Non_Prem implements Schedular{
                 }
             }
             ArrayList<Process> temp = new ArrayList<>();
-            temp.add(processes.get(index));
-            temp.get(0).setFirst_response(false);
-            processes.remove(processes.get(index));
-            if(temp.get(0).getArrivalTime() <= LiveTime) {
-                temp.get(0).setStart_time(LiveTime);
             if(processes.get(index).getRemaining_burst_time() != 0) {
                 temp.add(processes.get(index));
                 processes.remove(processes.get(index));
             }
-            else{
-                temp.get(0).setStart_time(temp.get(0).getArrivalTime());
             else{n--; continue;}
             if(temp.get(0).isFirst_response()) {
                 if (temp.get(0).getArrivalTime() <= LiveTime) {
@@ -73,7 +63,6 @@ public class SJF_Non_Prem implements Schedular{
             else if(temp.get(0).getStart_time() > LiveTime){
                 temp.get(0).setRemaining_burst_time(temp.get(0).getBurstTime() - (currenttime - temp.get(0).getStart_time()) );
             }
-            LiveTime+= temp.get(0).getBurstTime();
             temp.get(0).setFirst_response(false);
             temp.get(0).setEnd_time(temp.get(0).getStart_time() + temp.get(0).getBurstTime());
 //            temp.get(0).setRemaining_burst_time(temp.get(0).getBurstTime() - (currenttime - temp.get(0).getStart_time()));
