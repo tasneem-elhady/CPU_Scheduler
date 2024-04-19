@@ -16,7 +16,7 @@ public class SJF_Non_Prem implements Schedular{
         int CurrentServing = 0;
         for (Process retrial : processes){
             if(retrial.getRemaining_burst_time() == 0){continue;}
-            if(!retrial.isFirst_response()) {
+            if(!retrial.isFirst_response()  && retrial.getRemaining_burst_time() < retrial.getBurstTime()) {
                 CurrentServing = retrial.getProcessID();
                 LiveTime = retrial.getEnd_time();
                 break;
