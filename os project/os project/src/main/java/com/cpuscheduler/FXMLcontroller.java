@@ -237,6 +237,27 @@ public class FXMLcontroller implements Initializable {
 ////                Live_current_time++;
 //                FxmlHelper.printQueue(output, Live_current_time);
             }
+            else if(SchedulerType.getValue().toString().equals("preemptive SJF") && chosen_process.size() != Live_index){
+                System.out.println("Live index is " + Live_index);
+                System.out.println(chosen_process.size());
+//                System.out.println(outputLiveTime);
+                chosen_process = SJF_Prem.chosenProcess(outputLiveTime);
+                System.out.println(chosen_process);
+//                sets remaining time value in table
+                chosen_process.get(Live_index).getP().getProcessIndex().setRemainingTime(chosen_process.get(Live_index).getRemaining_time()+ "");
+//            drawing the process
+                if (prev_process == chosen_process.get(Live_index).getP().getProcess_ID()) {
+                    process_block = FxmlHelper.draw_process_trial(live, x, 30, "P" + chosen_process.get(Live_index).getP().getProcess_ID(), Live_current_time);
+                }
+                else {
+                    process_block = FxmlHelper.draw_process(live, x, 30, "P" + chosen_process.get(Live_index).getP().getProcess_ID(), Live_current_time);
+                }
+                prev_process = chosen_process.get(Live_index).getP().getProcessID();
+                if(chosen_process.size() - 1 == Live_index)
+                    FxmlHelper.draw_line(live, process_block,Live_index+1);
+                Live_index++;
+////
+            }
             else if(SchedulerType.getValue().toString().equals("preemptive priority") && output.size() != Live_index) {
 
                 Process p = (Process) PreemptivePriorityScheduling.getScheduledQueueP().toArray()[Live_index];
@@ -253,21 +274,7 @@ public class FXMLcontroller implements Initializable {
                 Live_index++;
 
             }
-            else if(SchedulerType.getValue().toString().equals("preemptive SJF") && output.size() != Live_current_time){
-                System.out.println("at second " + Live_current_time+"/////////////////////////////////////////////////////////////\n");
-                Process p = (Process) output.toArray()[Live_current_time];
 
-                if (prev_process == p.getProcess_ID())
-                    process_block = FxmlHelper.draw_process_trial(live, x, 30, "P" + p.getProcess_ID(),Live_current_time);
-                else
-                    process_block = FxmlHelper.draw_process(live, x, 30, "P" + p.getProcess_ID(), Live_current_time);
-//                p.getProcessIndex().setRemainingTime( p.getRemaining_burst_time()+ "");
-                prev_process = p.getProcess_ID();
-
-                if(output.size() - 1 == Live_current_time)
-                    FxmlHelper.draw_line(live, process_block,Live_current_time + 1);
-//                Live_current_time++;
-            }
             else if(SchedulerType.getValue().toString().equals("FCFS") && !output.isEmpty()) {
                 Process p = output.peek();
 
@@ -351,11 +358,15 @@ public class FXMLcontroller implements Initializable {
             FxmlHelper.draw_chart(output, chart);
         }
         else if(SchedulerType.getValue().toString().equals("preemptive SJF")) {
-            double x = chart.getLayoutX() + 30;
 
-            Queue<Process> output = schedule.Schedule(data_clone);
-            System.out.println("//////////////////////////////////////////////////////////////////////\n" + output);
-            FxmlHelper.draw_chart_PP(output,chart);
+//            System.out.println(quanta);
+//            System.out.println(data);
+            Queue<LiveTime> output;
+            output = ((SJF_Prem)schedule).Schedule(data_clone, 0);
+            System.out.println(output);
+            FxmlHelper.draw_chart_RR(output, chart);
+
+
         }
         else if(SchedulerType.getValue().toString().equals("FCFS")) {
             Queue <Process> output = ((FCFS)schedule).Schedule(data_clone, 0);
@@ -547,9 +558,8 @@ public class FXMLcontroller implements Initializable {
 //                output = PreemptivePriorityScheduling.getScheduledQueueP();
             }
             else if(SchedulerType.getValue().toString().equals("preemptive SJF")) {
-                System.out.println(SchedulerType.getValue().toString());
-                output = schedule.Schedule(data);
-//                output = PreemptivePriorityScheduling.getScheduledQueueP();
+                outputLiveTime = ((SJF_Prem)schedule).Schedule(data,0);
+                chosen_process = SJF_Prem.chosenProcess(outputLiveTime);
             }
             else if(SchedulerType.getValue().toString().equals("FCFS")) {
                 output = ((FCFS) schedule).Schedule(data, 0);
@@ -651,6 +661,18 @@ public class FXMLcontroller implements Initializable {
                     System.out.println("at Live//////////////////////////////////////////////////////////////////////////");
                     FxmlHelper.printQueue(output, 0);
                     System.out.println("///////////////////////////////////////////////////////////////////////////////");
+                }
+                else if(SchedulerType.getValue().toString().equals("preemptive SJF")) {
+
+                    System.out.println(outputLiveTime);
+                    outputLiveTime = ((SJF_Prem)schedule).Schedule(data,Live_current_time );
+                    chosen_process = SJF_Prem.chosenProcess(outputLiveTime);
+                    System.out.println("H||||||||||||||H");
+                    System.out.println(outputLiveTime);
+                    System.out.println("H||||||||||||||H");
+                    System.out.println("H||||||||||||||H");
+                    System.out.println(chosen_process.size());
+                    System.out.println("H||||||||||||||H");
                 }
                 else
                 {

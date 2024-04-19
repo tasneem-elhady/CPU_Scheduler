@@ -11,7 +11,7 @@ public class Process implements Comparable<Process> {
     private int remaining_burst_time;
     private int completed_time;
 //    mazen's
-    private int time_taken;
+
 
     private boolean first_response=true;
 
@@ -80,18 +80,8 @@ public class Process implements Comparable<Process> {
         this.BurstTime = burstTime;
         this.remaining_burst_time = burstTime;
     }
-//    mazen's
-    public Process(Process p,int time) {
-        this.processID = p.getProcessID();
-        this.ArrivalTime = p.getArrivalTime();
-        this.BurstTime = p.getBurstTime();
-        this.remaining_burst_time = p.getRemaining_burst_time();
-        this.Start_time=time;
-        this.completed_time=time+1;
-        this.time_taken=1;
-//        for view consistency
-        this.processIndex = p.processIndex;
-    }
+
+
     public int getBurstTime() {
         return BurstTime;
     }
@@ -193,7 +183,5 @@ public class Process implements Comparable<Process> {
         return this.getArrivalTime()-((Process)o).getArrivalTime();
     }
 
-    public int getTime_taken() {
-        return time_taken;
-    }
+
 }
