@@ -7,6 +7,7 @@ public class SJF_Non_Prem implements Schedular{
     int LiveTime = 0;
     @Override
     public Queue<Process> Schedule(ArrayList<Process> MyProcesses){return null;}
+
     public Queue<Process> Schedule(ArrayList<Process> MyProcesses,  int currenttime ){
         LiveTime = currenttime;
         ArrayList<Process> processes = (ArrayList<Process>) MyProcesses.clone();
@@ -14,8 +15,7 @@ public class SJF_Non_Prem implements Schedular{
         int CurrentServing = 0;
         for (Process retrial : processes){
             if(retrial.getRemaining_burst_time() == 0){continue;}
-            if(!retrial.isFirst_response()) {
-            if(!retrial.isFirst_response()  && retrial.getRemaining_burst_time() < retrial.getBurstTime()) {
+            if(!retrial.isFirst_response() && retrial.getRemaining_burst_time() < retrial.getBurstTime()) {
                 CurrentServing = retrial.getProcessID();
                 LiveTime = retrial.getEnd_time();
                 break;
@@ -121,6 +121,7 @@ public class SJF_Non_Prem implements Schedular{
         double t2 =sch.calculate_avg_wait_time(p);
         for(Process o : q){
             System.out.println( o.getProcess_ID());
+
         }
         System.out.println("Turn around= "+t);
         System.out.println("waiting= "+t2);
