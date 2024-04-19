@@ -6,6 +6,7 @@ public class SJF_Prem implements Schedular{
     private int  time=0;
     private int prevID=-1;
     private Deque<LiveTime> liveTimeQueue =new LinkedList<>() ;
+    private Stack<LiveTime> liveTimeStack =new Stack<>() ;
     @Override
 
     public Queue<Process> Schedule(ArrayList<Process> MyProcesses){return null;}
@@ -40,8 +41,15 @@ public class SJF_Prem implements Schedular{
                         processes.get(index).setFirst_response(false);
 
                     }
+
                     if(time==currentTime && currentTime!=0 && !liveTimeQueue.isEmpty()) {
                         if (liveTimeQueue.getLast().getEndingTime() > currentTime) {
+                            while(!liveTimeQueue.isEmpty()&&liveTimeQueue.getLast().getEndingTime() > currentTime){
+                                liveTimeStack.push(liveTimeQueue.getLast());
+                                liveTimeQueue.removeLast();
+                            }
+                            liveTimeQueue.add(liveTimeStack.pop());
+
                             if (processes.get(index).getProcess_ID() == prevID) {
 
                                 processes.get(index).setRemaining_burst_time(processes.get(index).getRemaining_burst_time() - 1);
