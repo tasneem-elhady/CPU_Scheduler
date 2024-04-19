@@ -222,6 +222,8 @@ public class FXMLcontroller implements Initializable {
 
 //            addingBar.setDisable(false);
             chart.getChildren().clear();
+            AvgTurnaroundTimeTF.clear();
+            AvgWaitingTimeTF.clear();
 //            SchedulerType.setDisable(true);
         });
         tl = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
@@ -612,6 +614,7 @@ public class FXMLcontroller implements Initializable {
                             FxmlHelper.isValid(Integer.toString(Integer.parseInt(ArrivalTimeTF.getText())+1)),
                             FxmlHelper.isValid(BurstTimeTF.getText()));
                     break;
+                case "preemptive priority":
                 case "non-preemptive priority":
 
                     newProcess = new processInTable(FxmlHelper.isValid(ProcessIDTF.getText()),
