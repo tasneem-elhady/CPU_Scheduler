@@ -12,7 +12,7 @@ public class SJF_Prem implements Schedular{
     public Queue<Process> Schedule(ArrayList<Process> MyProcesses){return null;}
 
     public Queue<LiveTime> Schedule(ArrayList<Process> MyProcesses,int currentTime){
-       time=0;
+        time=0;
         boolean flag=true;
         ArrayList<Process> processes = (ArrayList<Process>) MyProcesses.clone();
         Collections.sort(processes);
@@ -33,60 +33,33 @@ public class SJF_Prem implements Schedular{
             }
             int t =processes.get(index).getArrivalTime();
 
-                if (t <= time) {
+            if (t <= time) {
 
 
-                    if (processes.get(index).isFirst_response()) {
-                        processes.get(index).setStart_time(time);
-                        processes.get(index).setFirst_response(false);
+                if (processes.get(index).isFirst_response()) {
+                    processes.get(index).setStart_time(time);
+                    processes.get(index).setFirst_response(false);
 
-                    }
+                }
 
-                    if(time==currentTime && currentTime!=0 && !liveTimeQueue.isEmpty()) {
-                        if (liveTimeQueue.getLast().getEndingTime() > currentTime) {
-                            while(!liveTimeQueue.isEmpty()&&liveTimeQueue.getLast().getEndingTime() > currentTime){
-                                liveTimeStack.push(liveTimeQueue.getLast());
-                                liveTimeQueue.removeLast();
-                            }
-                            liveTimeQueue.add(liveTimeStack.pop());
-
-                            if (processes.get(index).getProcess_ID() == prevID) {
-
-                                processes.get(index).setRemaining_burst_time(processes.get(index).getRemaining_burst_time() - 1);
-
-
-                                liveTimeQueue.getLast().setAccumlativeTime((processes.get(index).getBurstTime() - processes.get(index).getRemaining_burst_time()));
-                                liveTimeQueue.getLast().setRemainingTime(liveTimeQueue.getLast().getRemainingTime() - 1);
-                            } else {
-                                liveTimeQueue.getLast().setCompletedTime(liveTimeQueue.getLast().getCompletedTime() - (liveTimeQueue.getLast().getEndingTime() - currentTime)-1);
-                                liveTimeQueue.getLast().setAccumlativeTime(liveTimeQueue.getLast().getAccumlativeTime() - (liveTimeQueue.getLast().getEndingTime() - currentTime)-1);
-
-                                p.add(processes.get(index));
-                                processes.get(index).setRemaining_burst_time(processes.get(index).getRemaining_burst_time() - 1);
-                                liveTimeQueue.add(new LiveTime(time, processes.get(index).getRemaining_burst_time(), 1, (processes.get(index).getBurstTime() - processes.get(index).getRemaining_burst_time()), processes.get(index)));
-                                liveTimeQueue.getLast().setEndingTime(time);
-                            }
-
-
+                if(time==currentTime && currentTime!=0 && !liveTimeQueue.isEmpty()) {
+                    if (liveTimeQueue.getLast().getEndingTime() > currentTime) {
+                        while(!liveTimeQueue.isEmpty()&&liveTimeQueue.getLast().getEndingTime() > currentTime){
+                            liveTimeStack.push(liveTimeQueue.getLast());
+                            liveTimeQueue.removeLast();
                         }
-                        else{
-                            p.add(processes.get(index));
-                            processes.get(index).setRemaining_burst_time(processes.get(index).getRemaining_burst_time() - 1);
-                            liveTimeQueue.add(new LiveTime(time, processes.get(index).getRemaining_burst_time(), 1, (processes.get(index).getBurstTime() - processes.get(index).getRemaining_burst_time()), processes.get(index)));
-                            liveTimeQueue.getLast().setEndingTime(time);
-                        }
-                    }
-                    else if(time>=currentTime){
-                        if (processes.get(index).getProcess_ID() == prevID && !liveTimeQueue.isEmpty()) {
+                        liveTimeQueue.add(liveTimeStack.pop());
+
+                        if (processes.get(index).getProcess_ID() == prevID) {
 
                             processes.get(index).setRemaining_burst_time(processes.get(index).getRemaining_burst_time() - 1);
 
 
-                            liveTimeQueue.getLast().setCompletedTime(liveTimeQueue.getLast().getCompletedTime() + 1);
                             liveTimeQueue.getLast().setAccumlativeTime((processes.get(index).getBurstTime() - processes.get(index).getRemaining_burst_time()));
                             liveTimeQueue.getLast().setRemainingTime(liveTimeQueue.getLast().getRemainingTime() - 1);
-                            liveTimeQueue.getLast().setEndingTime(liveTimeQueue.getLast().getEndingTime()+1);
                         } else {
+                            liveTimeQueue.getLast().setCompletedTime(liveTimeQueue.getLast().getCompletedTime() - (liveTimeQueue.getLast().getEndingTime() - currentTime)-1);
+                            liveTimeQueue.getLast().setAccumlativeTime(liveTimeQueue.getLast().getAccumlativeTime() - (liveTimeQueue.getLast().getEndingTime() - currentTime)-1);
 
                             p.add(processes.get(index));
                             processes.get(index).setRemaining_burst_time(processes.get(index).getRemaining_burst_time() - 1);
@@ -94,14 +67,41 @@ public class SJF_Prem implements Schedular{
                             liveTimeQueue.getLast().setEndingTime(time);
                         }
 
-                    }
-                    else {processes.get(index).setRemaining_burst_time(processes.get(index).getRemaining_burst_time() - 1);}
 
-                    prevID = processes.get(index).getProcess_ID();
-                    if (processes.get(index).getRemaining_burst_time() == 0) {
-                        processes.get(index).setEnd_time(time + 1);
-                        processes.remove(index);
-                    }}
+                    }
+                    else{
+                        p.add(processes.get(index));
+                        processes.get(index).setRemaining_burst_time(processes.get(index).getRemaining_burst_time() - 1);
+                        liveTimeQueue.add(new LiveTime(time, processes.get(index).getRemaining_burst_time(), 1, (processes.get(index).getBurstTime() - processes.get(index).getRemaining_burst_time()), processes.get(index)));
+                        liveTimeQueue.getLast().setEndingTime(time);
+                    }
+                }
+                else if(time>=currentTime){
+                    if (processes.get(index).getProcess_ID() == prevID && !liveTimeQueue.isEmpty()) {
+
+                        processes.get(index).setRemaining_burst_time(processes.get(index).getRemaining_burst_time() - 1);
+
+
+                        liveTimeQueue.getLast().setCompletedTime(liveTimeQueue.getLast().getCompletedTime() + 1);
+                        liveTimeQueue.getLast().setAccumlativeTime((processes.get(index).getBurstTime() - processes.get(index).getRemaining_burst_time()));
+                        liveTimeQueue.getLast().setRemainingTime(liveTimeQueue.getLast().getRemainingTime() - 1);
+                        liveTimeQueue.getLast().setEndingTime(liveTimeQueue.getLast().getEndingTime()+1);
+                    } else {
+
+                        p.add(processes.get(index));
+                        processes.get(index).setRemaining_burst_time(processes.get(index).getRemaining_burst_time() - 1);
+                        liveTimeQueue.add(new LiveTime(time, processes.get(index).getRemaining_burst_time(), 1, (processes.get(index).getBurstTime() - processes.get(index).getRemaining_burst_time()), processes.get(index)));
+                        liveTimeQueue.getLast().setEndingTime(time);
+                    }
+
+                }
+                else {processes.get(index).setRemaining_burst_time(processes.get(index).getRemaining_burst_time() - 1);}
+
+                prevID = processes.get(index).getProcess_ID();
+                if (processes.get(index).getRemaining_burst_time() == 0) {
+                    processes.get(index).setEnd_time(time + 1);
+                    processes.remove(index);
+                }}
 
 
             time++;
@@ -170,7 +170,7 @@ public class SJF_Prem implements Schedular{
 //        double t =sch.calculate_avg_turn_around_time(p);
 //        double t2 =sch.calculate_avg_wait_time(p);
         for(LiveTime o : q){
-           o.printLiveTime();
+            o.printLiveTime();
 //            System.out.println(o.);
 
         }
