@@ -144,14 +144,21 @@ public class FXMLcontroller implements Initializable {
         });
 
         number_of_added_process.addListener((obs, oldText, newText) -> {
-            if (!LiveMode.isSelected() && newText.equals(Integer.parseInt(no_processes.getText()))) {
-                    ProcessIDTF.clear();
-                    ArrivalTimeTF.clear();
-                    BurstTimeTF.clear();
-                    PriorityTF.clear();
-                    addingBar.setDisable(true);
-                    chart_pane .setDisable(false);
-                    schedule = FxmlHelper.initializeScheduler(SchedulerType.getValue().toString());
+            try{
+                    if (!LiveMode.isSelected() && newText.equals(Integer.parseInt(FxmlHelper.isValid(no_processes.getText())))) {
+                        ProcessIDTF.clear();
+                        ArrivalTimeTF.clear();
+                        BurstTimeTF.clear();
+                        PriorityTF.clear();
+                        addingBar.setDisable(true);
+                        chart_pane.setDisable(false);
+                        schedule = FxmlHelper.initializeScheduler(SchedulerType.getValue().toString());
+                    }
+                }catch (NumberFormatException e) {
+                Alert A = new Alert(Alert.AlertType.ERROR);
+                A.setContentText("Invalid input");
+                A.show();
+                RESET();
                 }
         });
 
@@ -164,11 +171,14 @@ public class FXMLcontroller implements Initializable {
                 switch (newText.toString()) {
                     case "Round Robin":
 //                FxmlHelper.clear_table(addingBar, number_of_added_process, processes);
+                        number_of_added_process.set(0);
+                        processesIntable.getItems().clear();
+                        data.clear();
                         QuantumTime.setVisible(true);
                         PriorityTF.setVisible(false);
                         PriorityTFL.setVisible(false);
                         priorityL.setVisible(false);
-                        schedule = FxmlHelper.initializeScheduler(SchedulerType.getValue().toString());
+//                        schedule = FxmlHelper.initializeScheduler(SchedulerType.getValue().toString());
                         break;
                     case "preemptive priority":
                     case "non-preemptive priority":
@@ -355,7 +365,7 @@ public class FXMLcontroller implements Initializable {
                 {
                     quanta = Integer.parseInt(QuantumTimeTF.getText());
                 }catch (NumberFormatException e) {
-                    Alert A = new Alert(Alert.AlertType.WARNING);
+                    Alert A = new Alert(Alert.AlertType.ERROR);
                     A.setContentText("Invalid input");
                     A.show();
                 }
@@ -394,7 +404,7 @@ public class FXMLcontroller implements Initializable {
     @FXML
     public void ADD_LIVE()
     {
-        Alert A = new Alert(Alert.AlertType.WARNING);
+        Alert A = new Alert(Alert.AlertType.ERROR);
         try {
             processInTable newProcess;
             switch (SchedulerType.getValue().toString()) {
@@ -438,7 +448,7 @@ public class FXMLcontroller implements Initializable {
                         quanta = Integer.parseInt(QuantumTimeTF.getText());
                     }
                     catch (NumberFormatException e) {
-                        Alert Al = new Alert(Alert.AlertType.WARNING);
+                        Alert Al = new Alert(Alert.AlertType.ERROR);
                         Al.setContentText("Invalid input");
                         Al.show();
                     }
@@ -478,7 +488,7 @@ public class FXMLcontroller implements Initializable {
                 }
             }
         }catch (NumberFormatException e) {
-            Alert Al = new Alert(Alert.AlertType.WARNING);
+            Alert Al = new Alert(Alert.AlertType.ERROR);
             Al.setContentText("Invalid input");
             Al.show();
         }
@@ -503,7 +513,7 @@ public class FXMLcontroller implements Initializable {
                 quanta =Integer.parseInt(QuantumTimeTF.getText());
             }
             catch (NumberFormatException e) {
-                Alert A = new Alert(Alert.AlertType.WARNING);
+                Alert A = new Alert(Alert.AlertType.ERROR);
                 A.setContentText("Invalid input");
                 A.show();
             }
@@ -563,7 +573,7 @@ public class FXMLcontroller implements Initializable {
     @FXML
     public void ADD()
     {
-        Alert A = new Alert(Alert.AlertType.WARNING);
+        Alert A = new Alert(Alert.AlertType.ERROR);
         if(no_processes.getText().length() == 0 && !LiveMode.isSelected()) {
             A.setContentText("Please choose number of processes");
             A.show();
@@ -598,7 +608,7 @@ public class FXMLcontroller implements Initializable {
         }
         catch (NumberFormatException ex)
         {
-            Alert Al = new Alert(Alert.AlertType.WARNING);
+            Alert Al = new Alert(Alert.AlertType.ERROR);
             Al.setContentText("Invalid input");
             Al.show();
         }

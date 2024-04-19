@@ -18,7 +18,8 @@ import java.util.Queue;
 public class FxmlHelper {
     public static String isValid (String text) {
         try {
-            Integer.parseInt(text);
+            if(Integer.parseInt(text) < 0)
+                throw new NumberFormatException();
         } catch (NumberFormatException e) {
             throw new NumberFormatException();
         }
