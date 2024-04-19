@@ -1,6 +1,7 @@
 package com.cpuscheduler;
 
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.scene.control.Alert;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.GridPane;
@@ -15,6 +16,14 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 public class FxmlHelper {
+    public static String isValid (String text) {
+        try {
+            Integer.parseInt(text);
+        } catch (NumberFormatException e) {
+            throw new NumberFormatException();
+        }
+        return text;
+    }
     public static Process get_process_at_index(Queue<Process> output, int index)
     {
         int i;
@@ -254,17 +263,20 @@ public class FxmlHelper {
         double x = chart.getLayoutX() + 30;
         int prev_process_s = -1 ;
         int size = output.size();
-        for (int i = 0; i < size; i++)
+        Rectangle process_block = new Rectangle();
+        int i ;
+        for (i = 0; i < size; i++)
         {
             Process p = output.remove();
 //                System.out.println(p);
 //                System.out.println(output);
             if (prev_process_s == p.getProcess_ID())
-                FxmlHelper.draw_process_trial(chart, x, 30, "P" + p.getProcess_ID(),i);
+                process_block = FxmlHelper.draw_process_trial(chart, x, 30, "P" + p.getProcess_ID(),i);
             else
-                FxmlHelper.draw_process(chart, x, 30, "P" + p.getProcess_ID(),i );
+                process_block = FxmlHelper.draw_process(chart, x, 30, "P" + p.getProcess_ID(),i );
             prev_process_s = p.getProcess_ID();
             x+=30;
         }
+        draw_line(chart, process_block, i +1);
     }
 }

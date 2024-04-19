@@ -78,7 +78,7 @@ if (arrivedProcesses.isEmpty()) {
               leastPriorityEqualArrivalTime.get(0).setRemaining_burst_time(leastPriorityEqualArrivalTime.get(0).getBurstTime());
 
           }else if (queue.isEmpty()) {
-              leastPriorityEqualArrivalTime.get(0).setRemaining_burst_time(leastPriorityEqualArrivalTime.get(0).getRemaining_burst_time()+1);
+              leastPriorityEqualArrivalTime.get(0).setRemaining_burst_time(leastPriorityEqualArrivalTime.get(0).getRemaining_burst_time());
           }else {
               leastPriorityEqualArrivalTime.get(0).setRemaining_burst_time(leastPriorityEqualArrivalTime.get(0).getRemaining_burst_time());
           }
