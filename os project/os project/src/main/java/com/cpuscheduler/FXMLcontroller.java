@@ -583,7 +583,11 @@ public class FXMLcontroller implements Initializable {
             processInTable newProcess;
             switch (SchedulerType.getValue().toString()) {
 
-                case "preemptive priority":
+                case "preemptive SJF":
+                    newProcess = new processInTable(FxmlHelper.isValid(ProcessIDTF.getText()),
+                            FxmlHelper.isValid(Integer.toString(Integer.parseInt(ArrivalTimeTF.getText())+1)),
+                            FxmlHelper.isValid(BurstTimeTF.getText()));
+                    break;
                 case "non-preemptive priority":
 
                     newProcess = new processInTable(FxmlHelper.isValid(ProcessIDTF.getText()),
