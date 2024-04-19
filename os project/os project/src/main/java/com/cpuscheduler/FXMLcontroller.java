@@ -105,6 +105,7 @@ public class FXMLcontroller implements Initializable {
     Timeline tl;
     Rectangle process_block;
 
+    Boolean prioritySet = false;
 
     boolean running = false;
     boolean added = false;
@@ -146,14 +147,20 @@ public class FXMLcontroller implements Initializable {
         number_of_added_process.addListener((obs, oldText, newText) -> {
             try{
                     if (!LiveMode.isSelected() && newText.equals(Integer.parseInt(FxmlHelper.isValid(no_processes.getText())))) {
+
                         ProcessIDTF.clear();
                         ArrivalTimeTF.clear();
                         BurstTimeTF.clear();
                         PriorityTF.clear();
                         addingBar.setDisable(true);
+                        System.out.println("add no more+++++++++++++++++++++++++++++++++++++++++++++");
                         chart_pane.setDisable(false);
-                        schedule = FxmlHelper.initializeScheduler(SchedulerType.getValue().toString());
+//                        schedule = FxmlHelper.initializeScheduler(SchedulerType.getValue().toString());
+                    }else {
+                        System.out.println("can add");
+                        addingBar.setDisable(false);
                     }
+
                 }catch (NumberFormatException e) {
                 Alert A = new Alert(Alert.AlertType.ERROR);
                 A.setContentText("Invalid input");
@@ -171,34 +178,51 @@ public class FXMLcontroller implements Initializable {
                 switch (newText.toString()) {
                     case "Round Robin":
 //                FxmlHelper.clear_table(addingBar, number_of_added_process, processes);
-                        number_of_added_process.set(0);
-                        processesIntable.getItems().clear();
-                        data.clear();
                         QuantumTime.setVisible(true);
                         PriorityTF.setVisible(false);
                         PriorityTFL.setVisible(false);
                         priorityL.setVisible(false);
-//                        schedule = FxmlHelper.initializeScheduler(SchedulerType.getValue().toString());
+                        schedule = FxmlHelper.initializeScheduler(SchedulerType.getValue().toString());
                         break;
                     case "preemptive priority":
                     case "non-preemptive priority":
-//                        FxmlHelper.clear_table(addingBar, number_of_added_process, processesIntable, data);
-                        number_of_added_process.set(0);
-                        processesIntable.getItems().clear();
-                        data.clear();
+                        if(!prioritySet)
+                        {
+                            chart_pane.setDisable(true);
+                            number_of_added_process.set(0);
+                            processesIntable.getItems().clear();
+                            data.clear();
+
+                        }
+                        prioritySet = true;
+//                        number_of_added_process.set(0);
+//                        processesIntable.getItems().clear();
+//                        data.clear();
                         QuantumTime.setVisible(false);
                         PriorityTF.setVisible(true);
                         PriorityTFL.setVisible(true);
                         priorityL.setVisible(true);
-//                        schedule = FxmlHelper.initializeScheduler(SchedulerType.getValue().toString());
+                        schedule = FxmlHelper.initializeScheduler(SchedulerType.getValue().toString());
                         break;
                     default:
+                        schedule = FxmlHelper.initializeScheduler(SchedulerType.getValue().toString());
                         QuantumTime.setVisible(false);
                         PriorityTF.setVisible(false);
                         PriorityTFL.setVisible(false);
                         priorityL.setVisible(false);
                 }
             }
+            if(data.size()!=0) {
+                System.out.println("before*****************************");
+                System.out.println(data);
+                FxmlHelper.ResetData(data);
+                System.out.println("after*****************************");
+                System.out.println(data);
+            }
+
+//            addingBar.setDisable(false);
+            chart.getChildren().clear();
+//            SchedulerType.setDisable(true);
         });
         tl = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
             System.out.println("at run ////////////////////////////////////////////////////////////////////////////////////////");
@@ -365,8 +389,8 @@ public class FXMLcontroller implements Initializable {
                 {
                     quanta = Integer.parseInt(QuantumTimeTF.getText());
                 }catch (NumberFormatException e) {
-                    Alert A = new Alert(Alert.AlertType.ERROR);
-                    A.setContentText("Invalid input");
+                    Alert A = new Alert(Alert.AlertType.WARNING);
+                    A.setContentText("Quantum time not set so default quanta = 1");
                     A.show();
                 }
 
@@ -449,7 +473,7 @@ public class FXMLcontroller implements Initializable {
                     }
                     catch (NumberFormatException e) {
                         Alert Al = new Alert(Alert.AlertType.ERROR);
-                        Al.setContentText("Invalid input");
+                        Al.setContentText("Quantum time not set so default quanta = 1");
                         Al.show();
                     }
 
@@ -492,7 +516,7 @@ public class FXMLcontroller implements Initializable {
             Al.setContentText("Invalid input");
             Al.show();
         }
-        catch (Exception e)
+        catch (NullPointerException e)
         {
             System.out.println(e);
             A.setContentText("Please choose scheduler type ");
@@ -507,14 +531,15 @@ public class FXMLcontroller implements Initializable {
         System.out.println(data);
         ArrayList<Process> data_clone = FxmlHelper.cloneList(data);
         if(SchedulerType.getValue().toString().equals("Round Robin")) {
+            chart.getChildren().clear();
             int quanta = 1 ;
             try
             {
                 quanta =Integer.parseInt(QuantumTimeTF.getText());
             }
             catch (NumberFormatException e) {
-                Alert A = new Alert(Alert.AlertType.ERROR);
-                A.setContentText("Invalid input");
+                Alert A = new Alert(Alert.AlertType.WARNING);
+                A.setContentText("Quantum time not set so default quanta = 1");
                 A.show();
             }
 
@@ -565,7 +590,6 @@ public class FXMLcontroller implements Initializable {
             p.getProcessIndex().setRemainingTime("0");
         }
         Computebtn.setDisable(false);
-
     }
 
 
@@ -616,7 +640,7 @@ public class FXMLcontroller implements Initializable {
             Al.setContentText("Invalid input");
             Al.show();
         }
-        catch (Exception e)
+        catch (NullPointerException e)
         {
             System.out.println(e);
             A.setContentText("Please choose scheduler type ");
@@ -636,12 +660,12 @@ public class FXMLcontroller implements Initializable {
         PriorityTFL.setVisible(false);
         priorityL.setVisible(false);
         chart_pane.setDisable(true);
+        prioritySet = false;
         live_pane.setDisable(true);
         no_processes.setDisable(false);
-        addingBar.setDisable(false);
         Computebtn.setDisable(true);
         SchedulerType.getSelectionModel().clearSelection();
-
+        SchedulerType.setDisable(false);
 //        SchedulerType.setPromptText("Schedule Type");
         AvgWaitingTimeTF.clear();
         AvgTurnaroundTimeTF.clear();

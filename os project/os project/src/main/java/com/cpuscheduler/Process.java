@@ -175,7 +175,8 @@ public class Process implements Comparable<Process> {
     }
     public String toString(){
         return (getProcess_ID()+" : arrival= "+getArrivalTime()+" , burst= "+ getBurstTime() + ", priority = " + getPriority()
-                +" , Start time= "+getStart_time()+" , End time= "+getEnd_time() + ", remaining burst time " + getRemaining_burst_time()+"\n");
+                +" , Start time= "+getStart_time()+" , End time= "+getEnd_time() + ", remaining burst time " + getRemaining_burst_time()+ ", start time: "+ getStart_time()+
+                ", end time: "+getEnd_time() +"\n");
     }
 
     @Override

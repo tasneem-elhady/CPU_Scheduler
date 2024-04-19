@@ -16,6 +16,15 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 public class FxmlHelper {
+
+    public static void ResetData(ArrayList<Process> data)
+    {
+        for (int i = 0; i < data.size(); i++)
+        {
+            data.set(i, new Process(data.get(i).getProcessIndex()));
+        }
+    }
+
     public static String isValid (String text) {
         try {
             if(Integer.parseInt(text) < 0)
@@ -278,6 +287,6 @@ public class FxmlHelper {
             prev_process_s = p.getProcess_ID();
             x+=30;
         }
-        draw_line(chart, process_block, i +1);
+        draw_line(chart, process_block, i);
     }
 }
